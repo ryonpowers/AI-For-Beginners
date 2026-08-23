@@ -1,0 +1,125 @@
+@prefix bm:   <urn:org:metadata:> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# ────────────────────────────────────────────────────────────────
+# Named graph: <urn:hierarchy:dataproduct>
+#
+# Levels:  SubjectArea (1) → Domain (2) → DataProduct (3)
+# ────────────────────────────────────────────────────────────────
+
+bm:dp_hierarchy a bm:DataProductHierarchy ;
+    rdfs:label "Enterprise Data Product Hierarchy" ;
+    bm:hasLevel bm:dph_level_subject_area ;
+    bm:hasLevel bm:dph_level_domain ;
+    bm:hasLevel bm:dph_level_product .
+
+bm:dph_level_subject_area a bm:DataProductHierarchyLevel ;
+    bm:levelName "Subject Area" ;
+    bm:levelOrder 1 .
+
+bm:dph_level_domain a bm:DataProductHierarchyLevel ;
+    bm:levelName "Domain" ;
+    bm:levelOrder 2 .
+
+bm:dph_level_product a bm:DataProductHierarchyLevel ;
+    bm:levelName "Data Product" ;
+    bm:levelOrder 3 .
+
+# ── Subject Areas ────────────────────────────────────────────────
+
+bm:dph_sa_commercial a bm:DataProductHierarchyNode ;
+    bm:nodeName "Commercial" ;
+    bm:nodeCode "COMM" ;
+    bm:atLevel bm:dph_level_subject_area ;
+    bm:isLeaf false .
+
+bm:dph_sa_finance a bm:DataProductHierarchyNode ;
+    bm:nodeName "Finance" ;
+    bm:nodeCode "FIN" ;
+    bm:atLevel bm:dph_level_subject_area ;
+    bm:isLeaf false .
+
+bm:dph_sa_workforce a bm:DataProductHierarchyNode ;
+    bm:nodeName "Workforce" ;
+    bm:nodeCode "WRK" ;
+    bm:atLevel bm:dph_level_subject_area ;
+    bm:isLeaf false .
+
+# ── Domain nodes under Commercial ───────────────────────────────
+
+bm:dph_dom_sales a bm:DataProductHierarchyNode ;
+    bm:nodeName "Sales" ;
+    bm:nodeCode "SALES" ;
+    bm:atLevel bm:dph_level_domain ;
+    bm:hasParent bm:dph_sa_commercial ;
+    bm:isLeaf false .
+
+bm:dph_dom_service a bm:DataProductHierarchyNode ;
+    bm:nodeName "Service" ;
+    bm:nodeCode "SVC" ;
+    bm:atLevel bm:dph_level_domain ;
+    bm:hasParent bm:dph_sa_commercial ;
+    bm:isLeaf false .
+
+# ── Domain nodes under Finance ───────────────────────────────────
+
+bm:dph_dom_revenue a bm:DataProductHierarchyNode ;
+    bm:nodeName "Revenue" ;
+    bm:nodeCode "REV" ;
+    bm:atLevel bm:dph_level_domain ;
+    bm:hasParent bm:dph_sa_finance ;
+    bm:isLeaf false .
+
+bm:dph_dom_cost a bm:DataProductHierarchyNode ;
+    bm:nodeName "Cost" ;
+    bm:nodeCode "COST" ;
+    bm:atLevel bm:dph_level_domain ;
+    bm:hasParent bm:dph_sa_finance ;
+    bm:isLeaf false .
+
+# ── Domain nodes under Workforce ─────────────────────────────────
+
+bm:dph_dom_hr a bm:DataProductHierarchyNode ;
+    bm:nodeName "Human Resources" ;
+    bm:nodeCode "HR" ;
+    bm:atLevel bm:dph_level_domain ;
+    bm:hasParent bm:dph_sa_workforce ;
+    bm:isLeaf false .
+
+# ── Product leaf nodes ───────────────────────────────────────────
+
+bm:dph_prod_daily_sales a bm:DataProductHierarchyNode ;
+    bm:nodeName "Daily Sales Summary" ;
+    bm:nodeCode "DP-SALES-001" ;
+    bm:atLevel bm:dph_level_product ;
+    bm:hasParent bm:dph_dom_sales ;
+    bm:isLeaf true .
+
+bm:dph_prod_svc_kpi a bm:DataProductHierarchyNode ;
+    bm:nodeName "Service KPI Dataset" ;
+    bm:nodeCode "DP-SVC-001" ;
+    bm:atLevel bm:dph_level_product ;
+    bm:hasParent bm:dph_dom_service ;
+    bm:isLeaf true .
+
+bm:dph_prod_rev_ytd a bm:DataProductHierarchyNode ;
+    bm:nodeName "Revenue YTD" ;
+    bm:nodeCode "DP-REV-001" ;
+    bm:atLevel bm:dph_level_product ;
+    bm:hasParent bm:dph_dom_revenue ;
+    bm:isLeaf true .
+
+bm:dph_prod_cost_center a bm:DataProductHierarchyNode ;
+    bm:nodeName "Cost Center Spend" ;
+    bm:nodeCode "DP-COST-001" ;
+    bm:atLevel bm:dph_level_product ;
+    bm:hasParent bm:dph_dom_cost ;
+    bm:isLeaf true .
+
+bm:dph_prod_headcount a bm:DataProductHierarchyNode ;
+    bm:nodeName "Headcount & Attrition" ;
+    bm:nodeCode "DP-HR-001" ;
+    bm:atLevel bm:dph_level_product ;
+    bm:hasParent bm:dph_dom_hr ;
+    bm:isLeaf true .

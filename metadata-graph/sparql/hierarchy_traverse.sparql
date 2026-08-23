@@ -1,0 +1,41 @@
+# hierarchy_traverse.sparql
+#
+# PURPOSE: Generic hierarchy traversal query.
+#          Returns the full ancestor path from a given node up to the root,
+#          then all descendants down to leaves.
+#
+# This query uses SPARQL 1.1 property paths (* = zero or more hops)
+# to traverse bm:hasParent transitively.
+#
+# USAGE:
+#   stardog query $STARDOG_DB sparql/hierarchy_traverse.sparql \
+#     --bind "startNodeCode=FY2025-Q1"
+#   (replace the named graph FROM clause with the target hierarchy graph)
+
+PREFIX bm:   <urn:org:metadata:> .
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# ── Part 1: Ancestors (root → start node) ────────────────────────
+SELECT DISTINCT
+    ("ANCESTOR" AS ?direction)
+    ?ancestor
+    ?ancestorName
+    ?ancestorCode
+    ?ancestorLevel
+    ?levelName
+FROM <urn:hierarchy:fiscal>
+WHERE {
+    # Find the start node by code
+    ?startNode bm:nodeCode ?startNodeCode .
+
+    # Walk up via bm:hasParent (zero or more hops)
+    ?startNode bm:hasParent* ?ancestor .
+
+    ?ancestor bm:nodeName ?ancestorName .
+    OPTIONAL { ?ancestor bm:nodeCode  ?ancestorCode . }
+    OPTIONAL {
+        ?ancestor bm:atLevel ?ancestorLevel .
+        ?ancestorLevel bm:levelName ?levelName .
+    }
+}
+ORDER BY ?levelName

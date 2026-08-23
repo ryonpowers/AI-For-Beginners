@@ -1,0 +1,32 @@
+# hierarchy_fiscal_current_period.sparql
+#
+# PURPOSE: Return all fiscal nodes that are marked as the current period,
+#          along with their ancestors up to the fiscal year.
+#
+# USAGE:
+#   stardog query $STARDOG_DB sparql/hierarchy_fiscal_current_period.sparql
+
+PREFIX bm:   <urn:org:metadata:>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?node ?nodeName ?nodeCode ?fiscalYear ?fiscalQuarter ?fiscalPeriod
+       ?ancestor ?ancestorName ?ancestorCode
+FROM <urn:hierarchy:fiscal>
+WHERE {
+    ?node a bm:FiscalHierarchyNode ;
+          bm:isCurrentPeriod true ;
+          bm:nodeName ?nodeName .
+
+    OPTIONAL { ?node bm:nodeCode     ?nodeCode . }
+    OPTIONAL { ?node bm:fiscalYear   ?fiscalYear . }
+    OPTIONAL { ?node bm:fiscalQuarter ?fiscalQuarter . }
+    OPTIONAL { ?node bm:fiscalPeriod  ?fiscalPeriod . }
+
+    # Ancestors
+    OPTIONAL {
+        ?node bm:hasParent+ ?ancestor .
+        ?ancestor bm:nodeName ?ancestorName .
+        OPTIONAL { ?ancestor bm:nodeCode ?ancestorCode . }
+    }
+}
+ORDER BY ?fiscalYear ?fiscalPeriod

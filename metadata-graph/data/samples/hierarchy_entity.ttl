@@ -1,0 +1,126 @@
+@prefix bm:   <urn:org:metadata:> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# ────────────────────────────────────────────────────────────────
+# Named graph: <urn:hierarchy:entity>
+#
+# Levels:  HoldingCompany (1) → LegalEntity (2) → OperatingUnit (3) → CostCenter (4)
+# ────────────────────────────────────────────────────────────────
+
+bm:entity_hierarchy a bm:EntityHierarchy ;
+    rdfs:label "Entity / Source Hierarchy" ;
+    bm:hasLevel bm:eh_level_holding ;
+    bm:hasLevel bm:eh_level_legal ;
+    bm:hasLevel bm:eh_level_operating ;
+    bm:hasLevel bm:eh_level_costcenter .
+
+bm:eh_level_holding a bm:EntityHierarchyLevel ;
+    bm:levelName "Holding Company" ;
+    bm:levelOrder 1 .
+
+bm:eh_level_legal a bm:EntityHierarchyLevel ;
+    bm:levelName "Legal Entity" ;
+    bm:levelOrder 2 .
+
+bm:eh_level_operating a bm:EntityHierarchyLevel ;
+    bm:levelName "Operating Unit" ;
+    bm:levelOrder 3 .
+
+bm:eh_level_costcenter a bm:EntityHierarchyLevel ;
+    bm:levelName "Cost Center" ;
+    bm:levelOrder 4 .
+
+# ── Holding company root ─────────────────────────────────────────
+
+bm:eh_holding a bm:EntityHierarchyNode ;
+    bm:nodeName "Example Holdings Inc." ;
+    bm:nodeCode "EHI" ;
+    bm:entityType "HoldingCompany" ;
+    bm:atLevel bm:eh_level_holding ;
+    bm:isLeaf false .
+
+# ── Legal entities ───────────────────────────────────────────────
+
+bm:eh_le_us a bm:EntityHierarchyNode ;
+    bm:nodeName "Example Corp US LLC" ;
+    bm:nodeCode "EC-US" ;
+    bm:entityType "LegalEntity" ;
+    bm:legalEntityId "LE-001" ;
+    bm:sourceSystem "SAP" ;
+    bm:atLevel bm:eh_level_legal ;
+    bm:hasParent bm:eh_holding ;
+    bm:isLeaf false .
+
+bm:eh_le_uk a bm:EntityHierarchyNode ;
+    bm:nodeName "Example Corp UK Ltd" ;
+    bm:nodeCode "EC-UK" ;
+    bm:entityType "LegalEntity" ;
+    bm:legalEntityId "LE-002" ;
+    bm:sourceSystem "Dynamics365" ;
+    bm:atLevel bm:eh_level_legal ;
+    bm:hasParent bm:eh_holding ;
+    bm:isLeaf false .
+
+# ── Operating units ──────────────────────────────────────────────
+
+bm:eh_ou_sales_us a bm:EntityHierarchyNode ;
+    bm:nodeName "US Sales Division" ;
+    bm:nodeCode "OU-SALES-US" ;
+    bm:entityType "OperatingUnit" ;
+    bm:sourceSystem "SAP" ;
+    bm:atLevel bm:eh_level_operating ;
+    bm:hasParent bm:eh_le_us ;
+    bm:isLeaf false .
+
+bm:eh_ou_ops_us a bm:EntityHierarchyNode ;
+    bm:nodeName "US Operations" ;
+    bm:nodeCode "OU-OPS-US" ;
+    bm:entityType "OperatingUnit" ;
+    bm:sourceSystem "SAP" ;
+    bm:atLevel bm:eh_level_operating ;
+    bm:hasParent bm:eh_le_us ;
+    bm:isLeaf false .
+
+bm:eh_ou_finance_uk a bm:EntityHierarchyNode ;
+    bm:nodeName "UK Finance" ;
+    bm:nodeCode "OU-FIN-UK" ;
+    bm:entityType "OperatingUnit" ;
+    bm:sourceSystem "Dynamics365" ;
+    bm:atLevel bm:eh_level_operating ;
+    bm:hasParent bm:eh_le_uk ;
+    bm:isLeaf false .
+
+# ── Cost centers (leaves) ────────────────────────────────────────
+
+bm:eh_cc_1001 a bm:EntityHierarchyNode ;
+    bm:nodeName "Sales – East Coast" ;
+    bm:nodeCode "CC-1001" ;
+    bm:entityType "CostCenter" ;
+    bm:atLevel bm:eh_level_costcenter ;
+    bm:hasParent bm:eh_ou_sales_us ;
+    bm:isLeaf true .
+
+bm:eh_cc_1002 a bm:EntityHierarchyNode ;
+    bm:nodeName "Sales – West Coast" ;
+    bm:nodeCode "CC-1002" ;
+    bm:entityType "CostCenter" ;
+    bm:atLevel bm:eh_level_costcenter ;
+    bm:hasParent bm:eh_ou_sales_us ;
+    bm:isLeaf true .
+
+bm:eh_cc_2001 a bm:EntityHierarchyNode ;
+    bm:nodeName "Field Operations" ;
+    bm:nodeCode "CC-2001" ;
+    bm:entityType "CostCenter" ;
+    bm:atLevel bm:eh_level_costcenter ;
+    bm:hasParent bm:eh_ou_ops_us ;
+    bm:isLeaf true .
+
+bm:eh_cc_3001 a bm:EntityHierarchyNode ;
+    bm:nodeName "UK Finance – General Ledger" ;
+    bm:nodeCode "CC-3001" ;
+    bm:entityType "CostCenter" ;
+    bm:atLevel bm:eh_level_costcenter ;
+    bm:hasParent bm:eh_ou_finance_uk ;
+    bm:isLeaf true .

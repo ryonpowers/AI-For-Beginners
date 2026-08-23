@@ -1,0 +1,112 @@
+@prefix bm:   <urn:org:metadata:> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# ────────────────────────────────────────────────────────────────
+# Named graph: <urn:hierarchy:customer>
+#
+# Levels:  GlobalParent (1) → Subsidiary (2) → Region (3) → Account (4)
+# ────────────────────────────────────────────────────────────────
+
+bm:cust_hierarchy a bm:CustomerHierarchy ;
+    rdfs:label "Customer Hierarchy" ;
+    bm:hasLevel bm:ch_level_global_parent ;
+    bm:hasLevel bm:ch_level_subsidiary ;
+    bm:hasLevel bm:ch_level_region ;
+    bm:hasLevel bm:ch_level_account .
+
+bm:ch_level_global_parent a bm:CustomerHierarchyLevel ;
+    bm:levelName "Global Parent" ;
+    bm:levelOrder 1 .
+
+bm:ch_level_subsidiary a bm:CustomerHierarchyLevel ;
+    bm:levelName "Subsidiary" ;
+    bm:levelOrder 2 .
+
+bm:ch_level_region a bm:CustomerHierarchyLevel ;
+    bm:levelName "Region" ;
+    bm:levelOrder 3 .
+
+bm:ch_level_account a bm:CustomerHierarchyLevel ;
+    bm:levelName "Account" ;
+    bm:levelOrder 4 .
+
+# ── Global parent ────────────────────────────────────────────────
+
+bm:ch_acme_global a bm:CustomerHierarchyNode ;
+    bm:nodeName "ACME Corporation (Global)" ;
+    bm:nodeCode "ACME-GLOB" ;
+    bm:atLevel bm:ch_level_global_parent ;
+    bm:customerSegment "Enterprise" ;
+    bm:customerType "Direct" ;
+    bm:isLeaf false .
+
+bm:ch_contoso_global a bm:CustomerHierarchyNode ;
+    bm:nodeName "Contoso Ltd (Global)" ;
+    bm:nodeCode "CONT-GLOB" ;
+    bm:atLevel bm:ch_level_global_parent ;
+    bm:customerSegment "Mid-Market" ;
+    bm:customerType "Direct" ;
+    bm:isLeaf false .
+
+# ── Subsidiaries ─────────────────────────────────────────────────
+
+bm:ch_acme_na a bm:CustomerHierarchyNode ;
+    bm:nodeName "ACME North America" ;
+    bm:nodeCode "ACME-NA" ;
+    bm:atLevel bm:ch_level_subsidiary ;
+    bm:hasParent bm:ch_acme_global ;
+    bm:isLeaf false .
+
+bm:ch_acme_emea a bm:CustomerHierarchyNode ;
+    bm:nodeName "ACME EMEA" ;
+    bm:nodeCode "ACME-EMEA" ;
+    bm:atLevel bm:ch_level_subsidiary ;
+    bm:hasParent bm:ch_acme_global ;
+    bm:isLeaf false .
+
+bm:ch_contoso_eu a bm:CustomerHierarchyNode ;
+    bm:nodeName "Contoso Europe" ;
+    bm:nodeCode "CONT-EU" ;
+    bm:atLevel bm:ch_level_subsidiary ;
+    bm:hasParent bm:ch_contoso_global ;
+    bm:isLeaf false .
+
+# ── Regions ──────────────────────────────────────────────────────
+
+bm:ch_acme_na_east a bm:CustomerHierarchyNode ;
+    bm:nodeName "ACME NA – East" ;
+    bm:nodeCode "ACME-NA-E" ;
+    bm:atLevel bm:ch_level_region ;
+    bm:hasParent bm:ch_acme_na ;
+    bm:isLeaf false .
+
+bm:ch_acme_na_west a bm:CustomerHierarchyNode ;
+    bm:nodeName "ACME NA – West" ;
+    bm:nodeCode "ACME-NA-W" ;
+    bm:atLevel bm:ch_level_region ;
+    bm:hasParent bm:ch_acme_na ;
+    bm:isLeaf false .
+
+# ── Accounts (leaves) ────────────────────────────────────────────
+
+bm:ch_acme_nyc a bm:CustomerHierarchyNode ;
+    bm:nodeName "ACME New York City" ;
+    bm:nodeCode "ACME-NYC-001" ;
+    bm:atLevel bm:ch_level_account ;
+    bm:hasParent bm:ch_acme_na_east ;
+    bm:isLeaf true .
+
+bm:ch_acme_boston a bm:CustomerHierarchyNode ;
+    bm:nodeName "ACME Boston" ;
+    bm:nodeCode "ACME-BOS-001" ;
+    bm:atLevel bm:ch_level_account ;
+    bm:hasParent bm:ch_acme_na_east ;
+    bm:isLeaf true .
+
+bm:ch_acme_la a bm:CustomerHierarchyNode ;
+    bm:nodeName "ACME Los Angeles" ;
+    bm:nodeCode "ACME-LA-001" ;
+    bm:atLevel bm:ch_level_account ;
+    bm:hasParent bm:ch_acme_na_west ;
+    bm:isLeaf true .
