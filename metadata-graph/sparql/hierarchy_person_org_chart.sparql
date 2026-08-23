@@ -1,0 +1,35 @@
+# hierarchy_person_org_chart.sparql
+#
+# PURPOSE: Return the person / org-chart hierarchy showing reporting lines,
+#          roles, and employee IDs.
+#
+# USAGE:
+#   stardog query $STARDOG_DB sparql/hierarchy_person_org_chart.sparql
+
+PREFIX bm:   <urn:org:metadata:>
+
+SELECT ?person ?personName ?personCode ?role ?employeeId
+       ?levelName ?levelOrder
+       ?managerName ?managerCode
+FROM <urn:hierarchy:person>
+WHERE {
+    ?person a bm:PersonHierarchyNode ;
+            bm:nodeName ?personName .
+
+    OPTIONAL { ?person bm:nodeCode    ?personCode . }
+    OPTIONAL { ?person bm:personRole  ?role . }
+    OPTIONAL { ?person bm:employeeId  ?employeeId . }
+
+    OPTIONAL {
+        ?person bm:atLevel ?level .
+        ?level bm:levelName  ?levelName ;
+               bm:levelOrder ?levelOrder .
+    }
+
+    OPTIONAL {
+        ?person bm:reportsTo ?manager .
+        ?manager bm:nodeName ?managerName .
+        OPTIONAL { ?manager bm:nodeCode ?managerCode . }
+    }
+}
+ORDER BY ?levelOrder ?personName

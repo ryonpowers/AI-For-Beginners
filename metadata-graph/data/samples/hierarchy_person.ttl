@@ -1,0 +1,129 @@
+@prefix bm:   <urn:org:metadata:> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# ────────────────────────────────────────────────────────────────
+# Named graph: <urn:hierarchy:person>
+#
+# Levels:  Organization (1) → BusinessUnit (2) → Team (3) → Individual (4)
+# ────────────────────────────────────────────────────────────────
+
+bm:person_hierarchy a bm:PersonHierarchy ;
+    rdfs:label "Person / Org Chart Hierarchy" ;
+    bm:hasLevel bm:ph_level_org ;
+    bm:hasLevel bm:ph_level_bu ;
+    bm:hasLevel bm:ph_level_team ;
+    bm:hasLevel bm:ph_level_individual .
+
+bm:ph_level_org a bm:PersonHierarchyLevel ;
+    bm:levelName "Organization" ;
+    bm:levelOrder 1 .
+
+bm:ph_level_bu a bm:PersonHierarchyLevel ;
+    bm:levelName "Business Unit" ;
+    bm:levelOrder 2 .
+
+bm:ph_level_team a bm:PersonHierarchyLevel ;
+    bm:levelName "Team" ;
+    bm:levelOrder 3 .
+
+bm:ph_level_individual a bm:PersonHierarchyLevel ;
+    bm:levelName "Individual" ;
+    bm:levelOrder 4 .
+
+# ── Organization root ────────────────────────────────────────────
+
+bm:ph_ceo a bm:PersonHierarchyNode ;
+    bm:nodeName "Chief Executive Officer" ;
+    bm:nodeCode "CEO" ;
+    bm:personRole "CEO" ;
+    bm:employeeId "E-0001" ;
+    bm:atLevel bm:ph_level_org ;
+    bm:isLeaf false .
+
+# ── Business units ───────────────────────────────────────────────
+
+bm:ph_bu_sales a bm:PersonHierarchyNode ;
+    bm:nodeName "Sales Business Unit" ;
+    bm:nodeCode "BU-SALES" ;
+    bm:personRole "VP of Sales" ;
+    bm:employeeId "E-0010" ;
+    bm:atLevel bm:ph_level_bu ;
+    bm:reportsTo bm:ph_ceo ;
+    bm:isLeaf false .
+
+bm:ph_bu_finance a bm:PersonHierarchyNode ;
+    bm:nodeName "Finance Business Unit" ;
+    bm:nodeCode "BU-FIN" ;
+    bm:personRole "CFO" ;
+    bm:employeeId "E-0020" ;
+    bm:atLevel bm:ph_level_bu ;
+    bm:reportsTo bm:ph_ceo ;
+    bm:isLeaf false .
+
+bm:ph_bu_ops a bm:PersonHierarchyNode ;
+    bm:nodeName "Operations Business Unit" ;
+    bm:nodeCode "BU-OPS" ;
+    bm:personRole "COO" ;
+    bm:employeeId "E-0030" ;
+    bm:atLevel bm:ph_level_bu ;
+    bm:reportsTo bm:ph_ceo ;
+    bm:isLeaf false .
+
+# ── Teams ────────────────────────────────────────────────────────
+
+bm:ph_team_east_sales a bm:PersonHierarchyNode ;
+    bm:nodeName "East Coast Sales Team" ;
+    bm:nodeCode "TM-SALES-E" ;
+    bm:personRole "Regional Sales Director" ;
+    bm:employeeId "E-0101" ;
+    bm:atLevel bm:ph_level_team ;
+    bm:reportsTo bm:ph_bu_sales ;
+    bm:isLeaf false .
+
+bm:ph_team_fp_and_a a bm:PersonHierarchyNode ;
+    bm:nodeName "FP&A Team" ;
+    bm:nodeCode "TM-FPA" ;
+    bm:personRole "FP&A Manager" ;
+    bm:employeeId "E-0201" ;
+    bm:atLevel bm:ph_level_team ;
+    bm:reportsTo bm:ph_bu_finance ;
+    bm:isLeaf false .
+
+bm:ph_team_field_ops a bm:PersonHierarchyNode ;
+    bm:nodeName "Field Operations Team" ;
+    bm:nodeCode "TM-FOPS" ;
+    bm:personRole "Operations Manager" ;
+    bm:employeeId "E-0301" ;
+    bm:atLevel bm:ph_level_team ;
+    bm:reportsTo bm:ph_bu_ops ;
+    bm:isLeaf false .
+
+# ── Individuals (leaves) ─────────────────────────────────────────
+
+bm:ph_ind_a101 a bm:PersonHierarchyNode ;
+    bm:nodeName "Alex Johnson" ;
+    bm:nodeCode "IND-A101" ;
+    bm:personRole "Account Executive" ;
+    bm:employeeId "E-1001" ;
+    bm:atLevel bm:ph_level_individual ;
+    bm:reportsTo bm:ph_team_east_sales ;
+    bm:isLeaf true .
+
+bm:ph_ind_b202 a bm:PersonHierarchyNode ;
+    bm:nodeName "Blake Martinez" ;
+    bm:nodeCode "IND-B202" ;
+    bm:personRole "Financial Analyst" ;
+    bm:employeeId "E-2001" ;
+    bm:atLevel bm:ph_level_individual ;
+    bm:reportsTo bm:ph_team_fp_and_a ;
+    bm:isLeaf true .
+
+bm:ph_ind_c303 a bm:PersonHierarchyNode ;
+    bm:nodeName "Casey Williams" ;
+    bm:nodeCode "IND-C303" ;
+    bm:personRole "Field Technician" ;
+    bm:employeeId "E-3001" ;
+    bm:atLevel bm:ph_level_individual ;
+    bm:reportsTo bm:ph_team_field_ops ;
+    bm:isLeaf true .

@@ -1,0 +1,61 @@
+@prefix bm:   <urn:org:metadata:> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# ─────────────────────────────────────────────
+# Named graph: <urn:reports:catalog>
+# ─────────────────────────────────────────────
+
+# Service Organizations
+bm:org_sales_east a bm:ServiceOrganization ;
+    rdfs:label "Sales – Eastern Region" ;
+    bm:owner "vp-sales-east@example.com" .
+
+bm:org_finance a bm:ServiceOrganization ;
+    rdfs:label "Finance & Accounting" ;
+    bm:owner "cfo-office@example.com" .
+
+bm:org_operations a bm:ServiceOrganization ;
+    rdfs:label "Field Operations" ;
+    bm:owner "ops-director@example.com" .
+
+# Semantic Models
+bm:model_sales_cube a bm:SemanticModel ;
+    bm:modelName "Sales Performance Cube" ;
+    bm:modelType "SSAS_Tabular" ;
+    bm:owner "bi-team@example.com" .
+
+bm:model_finance_dataset a bm:SemanticModel ;
+    bm:modelName "Finance KPI Dataset" ;
+    bm:modelType "PowerBI_Dataset" ;
+    bm:owner "bi-team@example.com" .
+
+bm:model_ops_dashboard a bm:SemanticModel ;
+    bm:modelName "Operations Dashboard Dataset" ;
+    bm:modelType "PowerBI_Dataset" ;
+    bm:owner "bi-team@example.com" .
+
+# Reports
+bm:report_monthly_sales a bm:Report ;
+    bm:reportName "Monthly Sales Summary" ;
+    bm:reportType "PowerBI" ;
+    bm:owner "sales-analytics@example.com" ;
+    bm:distributedTo bm:org_sales_east ;
+    bm:distributedTo bm:org_finance .
+
+bm:report_revenue_ytd a bm:Report ;
+    bm:reportName "Revenue Year-to-Date" ;
+    bm:reportType "SSAS_Tabular" ;
+    bm:owner "finance-analytics@example.com" ;
+    bm:distributedTo bm:org_finance .
+
+bm:report_ops_kpi a bm:Report ;
+    bm:reportName "Operations KPI Dashboard" ;
+    bm:reportType "PowerBI" ;
+    bm:owner "ops-analytics@example.com" ;
+    bm:distributedTo bm:org_operations .
+
+# SemanticModel → Report links
+bm:model_sales_cube     bm:consumedBy bm:report_monthly_sales .
+bm:model_finance_dataset bm:consumedBy bm:report_revenue_ytd .
+bm:model_ops_dashboard   bm:consumedBy bm:report_ops_kpi .

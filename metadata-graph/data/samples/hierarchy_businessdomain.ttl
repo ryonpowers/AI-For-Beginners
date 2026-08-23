@@ -1,0 +1,133 @@
+@prefix bm:   <urn:org:metadata:> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# ────────────────────────────────────────────────────────────────
+# Named graph: <urn:hierarchy:businessdomain>
+#
+# Levels:  Enterprise (1) → Division (2) → Department (3) → Function (4)
+# ────────────────────────────────────────────────────────────────
+
+bm:bd_hierarchy a bm:BusinessDomainHierarchy ;
+    rdfs:label "Business Domain Hierarchy" ;
+    bm:hasLevel bm:bdh_level_enterprise ;
+    bm:hasLevel bm:bdh_level_division ;
+    bm:hasLevel bm:bdh_level_department ;
+    bm:hasLevel bm:bdh_level_function .
+
+bm:bdh_level_enterprise a bm:BusinessDomainHierarchyLevel ;
+    bm:levelName "Enterprise" ;
+    bm:levelOrder 1 .
+
+bm:bdh_level_division a bm:BusinessDomainHierarchyLevel ;
+    bm:levelName "Division" ;
+    bm:levelOrder 2 .
+
+bm:bdh_level_department a bm:BusinessDomainHierarchyLevel ;
+    bm:levelName "Department" ;
+    bm:levelOrder 3 .
+
+bm:bdh_level_function a bm:BusinessDomainHierarchyLevel ;
+    bm:levelName "Function" ;
+    bm:levelOrder 4 .
+
+# ── Enterprise root ──────────────────────────────────────────────
+
+bm:bdh_enterprise a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Enterprise" ;
+    bm:nodeCode "ENT" ;
+    bm:atLevel bm:bdh_level_enterprise ;
+    bm:isLeaf false .
+
+# ── Division nodes ───────────────────────────────────────────────
+
+bm:bdh_div_commercial a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Commercial" ;
+    bm:nodeCode "DIV-COMM" ;
+    bm:atLevel bm:bdh_level_division ;
+    bm:hasParent bm:bdh_enterprise ;
+    bm:isLeaf false .
+
+bm:bdh_div_finance a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Finance" ;
+    bm:nodeCode "DIV-FIN" ;
+    bm:atLevel bm:bdh_level_division ;
+    bm:hasParent bm:bdh_enterprise ;
+    bm:isLeaf false .
+
+bm:bdh_div_operations a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Operations" ;
+    bm:nodeCode "DIV-OPS" ;
+    bm:atLevel bm:bdh_level_division ;
+    bm:hasParent bm:bdh_enterprise ;
+    bm:isLeaf false .
+
+# ── Department nodes ─────────────────────────────────────────────
+
+bm:bdh_dept_sales a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Sales" ;
+    bm:nodeCode "DEPT-SALES" ;
+    bm:atLevel bm:bdh_level_department ;
+    bm:hasParent bm:bdh_div_commercial ;
+    bm:isLeaf false ;
+    bm:representsDomain bm:domain_Sales .
+
+bm:bdh_dept_marketing a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Marketing" ;
+    bm:nodeCode "DEPT-MKT" ;
+    bm:atLevel bm:bdh_level_department ;
+    bm:hasParent bm:bdh_div_commercial ;
+    bm:isLeaf false .
+
+bm:bdh_dept_accounting a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Accounting" ;
+    bm:nodeCode "DEPT-ACCT" ;
+    bm:atLevel bm:bdh_level_department ;
+    bm:hasParent bm:bdh_div_finance ;
+    bm:isLeaf false ;
+    bm:representsDomain bm:domain_Finance .
+
+bm:bdh_dept_fp_and_a a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "FP&A" ;
+    bm:nodeCode "DEPT-FPA" ;
+    bm:atLevel bm:bdh_level_department ;
+    bm:hasParent bm:bdh_div_finance ;
+    bm:isLeaf false .
+
+bm:bdh_dept_field_ops a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Field Operations" ;
+    bm:nodeCode "DEPT-FOPS" ;
+    bm:atLevel bm:bdh_level_department ;
+    bm:hasParent bm:bdh_div_operations ;
+    bm:isLeaf false ;
+    bm:representsDomain bm:domain_Operations .
+
+# ── Function leaf nodes ──────────────────────────────────────────
+
+bm:bdh_fn_inside_sales a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Inside Sales" ;
+    bm:nodeCode "FN-ISALES" ;
+    bm:atLevel bm:bdh_level_function ;
+    bm:hasParent bm:bdh_dept_sales ;
+    bm:isLeaf true .
+
+bm:bdh_fn_enterprise_sales a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Enterprise Sales" ;
+    bm:nodeCode "FN-ESALES" ;
+    bm:atLevel bm:bdh_level_function ;
+    bm:hasParent bm:bdh_dept_sales ;
+    bm:isLeaf true .
+
+bm:bdh_fn_gl a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "General Ledger" ;
+    bm:nodeCode "FN-GL" ;
+    bm:atLevel bm:bdh_level_function ;
+    bm:hasParent bm:bdh_dept_accounting ;
+    bm:isLeaf true .
+
+bm:bdh_fn_forecasting a bm:BusinessDomainHierarchyNode ;
+    bm:nodeName "Forecasting" ;
+    bm:nodeCode "FN-FCST" ;
+    bm:atLevel bm:bdh_level_function ;
+    bm:hasParent bm:bdh_dept_fp_and_a ;
+    bm:isLeaf true .

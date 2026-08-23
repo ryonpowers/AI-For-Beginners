@@ -1,0 +1,196 @@
+@prefix bm:   <urn:org:metadata:> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# ────────────────────────────────────────────────────────────────
+# Named graph: <urn:hierarchy:fiscal>
+#
+# Levels:  FiscalYear (1) → FiscalHalf (2) → FiscalQuarter (3)
+#          → FiscalPeriod/Month (4) → FiscalWeek (5) → FiscalDay (6)
+#
+# This file covers FY2024 (Oct 1 2023 – Sep 30 2024) as an example
+# of an October-start fiscal year.
+# ────────────────────────────────────────────────────────────────
+
+bm:fiscal_hierarchy a bm:FiscalHierarchy ;
+    rdfs:label "Fiscal Calendar Hierarchy" ;
+    bm:hasLevel bm:fh_level_year ;
+    bm:hasLevel bm:fh_level_half ;
+    bm:hasLevel bm:fh_level_quarter ;
+    bm:hasLevel bm:fh_level_period ;
+    bm:hasLevel bm:fh_level_week ;
+    bm:hasLevel bm:fh_level_day .
+
+bm:fh_level_year a bm:FiscalHierarchyLevel ;
+    bm:levelName "Fiscal Year" ;
+    bm:levelOrder 1 .
+
+bm:fh_level_half a bm:FiscalHierarchyLevel ;
+    bm:levelName "Fiscal Half" ;
+    bm:levelOrder 2 .
+
+bm:fh_level_quarter a bm:FiscalHierarchyLevel ;
+    bm:levelName "Fiscal Quarter" ;
+    bm:levelOrder 3 .
+
+bm:fh_level_period a bm:FiscalHierarchyLevel ;
+    bm:levelName "Fiscal Period" ;
+    bm:levelOrder 4 .
+
+bm:fh_level_week a bm:FiscalHierarchyLevel ;
+    bm:levelName "Fiscal Week" ;
+    bm:levelOrder 5 .
+
+bm:fh_level_day a bm:FiscalHierarchyLevel ;
+    bm:levelName "Fiscal Day" ;
+    bm:levelOrder 6 .
+
+# ── Fiscal Year ───────────────────────────────────────────────────
+
+bm:fh_fy2024 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2024" ;
+    bm:nodeCode "FY2024" ;
+    bm:fiscalYear 2024 ;
+    bm:fiscalYearStartDate "2023-10-01"^^xsd:date ;
+    bm:fiscalYearEndDate "2024-09-30"^^xsd:date ;
+    bm:isCurrentPeriod false ;
+    bm:atLevel bm:fh_level_year ;
+    bm:isLeaf false .
+
+bm:fh_fy2025 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025" ;
+    bm:nodeCode "FY2025" ;
+    bm:fiscalYear 2025 ;
+    bm:fiscalYearStartDate "2024-10-01"^^xsd:date ;
+    bm:fiscalYearEndDate "2025-09-30"^^xsd:date ;
+    bm:isCurrentPeriod true ;
+    bm:atLevel bm:fh_level_year ;
+    bm:isLeaf false .
+
+# ── Fiscal Halves (FY2025) ────────────────────────────────────────
+
+bm:fh_fy2025_h1 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025 H1" ;
+    bm:nodeCode "FY2025-H1" ;
+    bm:fiscalYear 2025 ;
+    bm:atLevel bm:fh_level_half ;
+    bm:hasParent bm:fh_fy2025 ;
+    bm:isLeaf false .
+
+bm:fh_fy2025_h2 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025 H2" ;
+    bm:nodeCode "FY2025-H2" ;
+    bm:fiscalYear 2025 ;
+    bm:atLevel bm:fh_level_half ;
+    bm:hasParent bm:fh_fy2025 ;
+    bm:isLeaf false .
+
+# ── Fiscal Quarters (FY2025) ──────────────────────────────────────
+
+bm:fh_fy2025_q1 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025 Q1" ;
+    bm:nodeCode "FY2025-Q1" ;
+    bm:fiscalYear 2025 ;
+    bm:fiscalQuarter 1 ;
+    bm:fiscalYearStartDate "2024-10-01"^^xsd:date ;
+    bm:fiscalYearEndDate "2024-12-31"^^xsd:date ;
+    bm:atLevel bm:fh_level_quarter ;
+    bm:hasParent bm:fh_fy2025_h1 ;
+    bm:isLeaf false .
+
+bm:fh_fy2025_q2 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025 Q2" ;
+    bm:nodeCode "FY2025-Q2" ;
+    bm:fiscalYear 2025 ;
+    bm:fiscalQuarter 2 ;
+    bm:fiscalYearStartDate "2025-01-01"^^xsd:date ;
+    bm:fiscalYearEndDate "2025-03-31"^^xsd:date ;
+    bm:atLevel bm:fh_level_quarter ;
+    bm:hasParent bm:fh_fy2025_h1 ;
+    bm:isLeaf false .
+
+bm:fh_fy2025_q3 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025 Q3" ;
+    bm:nodeCode "FY2025-Q3" ;
+    bm:fiscalYear 2025 ;
+    bm:fiscalQuarter 3 ;
+    bm:fiscalYearStartDate "2025-04-01"^^xsd:date ;
+    bm:fiscalYearEndDate "2025-06-30"^^xsd:date ;
+    bm:atLevel bm:fh_level_quarter ;
+    bm:hasParent bm:fh_fy2025_h2 ;
+    bm:isLeaf false .
+
+bm:fh_fy2025_q4 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025 Q4" ;
+    bm:nodeCode "FY2025-Q4" ;
+    bm:fiscalYear 2025 ;
+    bm:fiscalQuarter 4 ;
+    bm:fiscalYearStartDate "2025-07-01"^^xsd:date ;
+    bm:fiscalYearEndDate "2025-09-30"^^xsd:date ;
+    bm:atLevel bm:fh_level_quarter ;
+    bm:hasParent bm:fh_fy2025_h2 ;
+    bm:isLeaf false .
+
+# ── Fiscal Periods / Months (FY2025 Q1 only — pattern repeats) ───
+
+bm:fh_fy2025_p01 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025 P01 – October 2024" ;
+    bm:nodeCode "FY2025-P01" ;
+    bm:fiscalYear 2025 ;
+    bm:fiscalPeriod 1 ;
+    bm:fiscalYearStartDate "2024-10-01"^^xsd:date ;
+    bm:fiscalYearEndDate "2024-10-31"^^xsd:date ;
+    bm:isCurrentPeriod false ;
+    bm:atLevel bm:fh_level_period ;
+    bm:hasParent bm:fh_fy2025_q1 ;
+    bm:isLeaf false .
+
+bm:fh_fy2025_p02 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025 P02 – November 2024" ;
+    bm:nodeCode "FY2025-P02" ;
+    bm:fiscalYear 2025 ;
+    bm:fiscalPeriod 2 ;
+    bm:fiscalYearStartDate "2024-11-01"^^xsd:date ;
+    bm:fiscalYearEndDate "2024-11-30"^^xsd:date ;
+    bm:isCurrentPeriod false ;
+    bm:atLevel bm:fh_level_period ;
+    bm:hasParent bm:fh_fy2025_q1 ;
+    bm:isLeaf false .
+
+bm:fh_fy2025_p03 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025 P03 – December 2024" ;
+    bm:nodeCode "FY2025-P03" ;
+    bm:fiscalYear 2025 ;
+    bm:fiscalPeriod 3 ;
+    bm:fiscalYearStartDate "2024-12-01"^^xsd:date ;
+    bm:fiscalYearEndDate "2024-12-31"^^xsd:date ;
+    bm:isCurrentPeriod false ;
+    bm:atLevel bm:fh_level_period ;
+    bm:hasParent bm:fh_fy2025_q1 ;
+    bm:isLeaf false .
+
+# ── Fiscal Weeks (P01 week 1 as a sample) ────────────────────────
+
+bm:fh_fy2025_p01_w1 a bm:FiscalHierarchyNode ;
+    bm:nodeName "FY2025 P01 W1 (Oct 1–5 2024)" ;
+    bm:nodeCode "FY2025-P01-W1" ;
+    bm:fiscalYear 2025 ;
+    bm:fiscalPeriod 1 ;
+    bm:fiscalYearStartDate "2024-10-01"^^xsd:date ;
+    bm:fiscalYearEndDate "2024-10-05"^^xsd:date ;
+    bm:atLevel bm:fh_level_week ;
+    bm:hasParent bm:fh_fy2025_p01 ;
+    bm:isLeaf false .
+
+# ── Fiscal Days (Oct 1 as a sample leaf) ─────────────────────────
+
+bm:fh_day_20241001 a bm:FiscalHierarchyNode ;
+    bm:nodeName "2024-10-01" ;
+    bm:nodeCode "20241001" ;
+    bm:fiscalYear 2025 ;
+    bm:fiscalPeriod 1 ;
+    bm:calendarDate "2024-10-01"^^xsd:date ;
+    bm:isCurrentPeriod false ;
+    bm:atLevel bm:fh_level_day ;
+    bm:hasParent bm:fh_fy2025_p01_w1 ;
+    bm:isLeaf true .

@@ -1,0 +1,16 @@
+short_name,full_name,domain,definition,approved_by,approved_date,file_version
+CUST,Customer,Sales,"An individual or organization that purchases goods or services.",IT-AbbreviationFile-v1,2024-01-15,1.0
+ACCT,Account,Finance,"A record of financial transactions for a customer or entity.",IT-AbbreviationFile-v1,2024-01-15,1.0
+PROD,Product,Inventory,"A good or service offered for sale.",IT-AbbreviationFile-v1,2024-01-15,1.0
+ORD,Order,Sales,"A confirmed request by a customer to purchase one or more products.",IT-AbbreviationFile-v1,2024-01-15,1.0
+INV,Invoice,Finance,"A bill issued to a customer listing goods/services and amounts due.",IT-AbbreviationFile-v1,2024-01-15,1.0
+EMP,Employee,HR,"A person employed by the organization.",IT-AbbreviationFile-v1,2024-01-15,1.0
+DEPT,Department,HR,"An organizational unit within the company.",IT-AbbreviationFile-v1,2024-01-15,1.0
+REG,Region,Geography,"A geographic subdivision for sales and operations.",IT-AbbreviationFile-v1,2024-01-15,1.0
+SVC,Service,Operations,"A non-physical offering provided to customers.",IT-AbbreviationFile-v1,2024-01-15,1.0
+REV,Revenue,Finance,"Total income generated from sales of goods or services.",IT-AbbreviationFile-v1,2024-01-15,1.0
+COST,Cost,Finance,"Expenditure incurred in producing or delivering a product or service.",IT-AbbreviationFile-v1,2024-01-15,1.0
+QTY,Quantity,Inventory,"The numerical count of items in a transaction or stock.",IT-AbbreviationFile-v1,2024-01-15,1.0
+DT,Date,Common,"A calendar date value.",IT-AbbreviationFile-v1,2024-01-15,1.0
+AMT,Amount,Finance,"A monetary value expressed in the reporting currency.",IT-AbbreviationFile-v1,2024-01-15,1.0
+ID,Identifier,Common,"A unique key used to identify a record.",IT-AbbreviationFile-v1,2024-01-15,1.0

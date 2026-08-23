@@ -1,0 +1,37 @@
+# term_to_reports.sparql
+#
+# PURPOSE: Given a business term full name, find all reports that
+#          ultimately surface that term.
+#
+# USAGE:
+#   stardog query $STARDOG_DB sparql/term_to_reports.sparql \
+#     --bind "termFullName=Customer"
+
+PREFIX bm:   <urn:org:metadata:>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT
+    ?term ?fullName
+    ?dataProduct
+    ?semanticModel ?modelName
+    ?report ?reportName ?reportType
+    ?organization
+FROM <urn:abbrev:mapping>
+FROM <urn:dataproduct:core>
+FROM <urn:semantic:models>
+FROM <urn:reports:catalog>
+WHERE {
+    ?term a bm:BusinessTerm ;
+          bm:fullName ?termFullName ;
+          bm:fullName ?fullName .
+
+    ?dpCol bm:mappedToTerm ?term .
+    ?dataProduct bm:hasDataProductColumn ?dpCol ;
+                 bm:exposedVia ?semanticModel .
+    ?semanticModel bm:modelName ?modelName ;
+                   bm:consumedBy ?report .
+    ?report bm:reportName ?reportName ;
+            bm:reportType ?reportType .
+    OPTIONAL { ?report bm:distributedTo ?organization . }
+}
+ORDER BY ?reportName

@@ -1,0 +1,33 @@
+# hierarchy_customer_tree.sparql
+#
+# PURPOSE: Return the full customer hierarchy tree with depth indicator,
+#          segment, and type information.
+#
+# USAGE:
+#   stardog query $STARDOG_DB sparql/hierarchy_customer_tree.sparql
+
+PREFIX bm:   <urn:org:metadata:>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?node ?nodeName ?nodeCode ?levelName ?levelOrder ?segment ?type ?parentName
+FROM <urn:hierarchy:customer>
+WHERE {
+    ?node a bm:CustomerHierarchyNode ;
+          bm:nodeName ?nodeName .
+
+    OPTIONAL { ?node bm:nodeCode ?nodeCode . }
+    OPTIONAL { ?node bm:customerSegment ?segment . }
+    OPTIONAL { ?node bm:customerType    ?type . }
+
+    OPTIONAL {
+        ?node bm:atLevel ?level .
+        ?level bm:levelName  ?levelName ;
+               bm:levelOrder ?levelOrder .
+    }
+
+    OPTIONAL {
+        ?node bm:hasParent ?parent .
+        ?parent bm:nodeName ?parentName .
+    }
+}
+ORDER BY ?levelOrder ?nodeName

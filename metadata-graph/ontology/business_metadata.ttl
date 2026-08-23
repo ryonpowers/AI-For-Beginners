@@ -1,0 +1,553 @@
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dc:    <http://purl.org/dc/elements/1.1/> .
+@prefix bm:    <urn:org:metadata:> .
+
+# ─────────────────────────────────────────────
+# Ontology header
+# ─────────────────────────────────────────────
+<urn:org:metadata:ontology>
+    a owl:Ontology ;
+    dc:title "Enterprise Business Metadata Ontology" ;
+    dc:description "OWL ontology mapping IT abbreviations and source columns to business domains, data products, semantic models, and reports." ;
+    owl:versionInfo "1.0.0" .
+
+# ─────────────────────────────────────────────
+# Classes
+# ─────────────────────────────────────────────
+
+bm:SourceDatabase a owl:Class ;
+    rdfs:label "Source Database" ;
+    rdfs:comment "A relational database that is a source of raw data." .
+
+bm:SourceSchema a owl:Class ;
+    rdfs:label "Source Schema" ;
+    rdfs:comment "A schema within a source database." .
+
+bm:SourceTable a owl:Class ;
+    rdfs:label "Source Table" ;
+    rdfs:comment "A table within a source schema." .
+
+bm:SourceColumn a owl:Class ;
+    rdfs:label "Source Column" ;
+    rdfs:comment "A column within a source table, potentially carrying an IT-derived abbreviation." .
+
+bm:Abbreviation a owl:Class ;
+    rdfs:label "Abbreviation" ;
+    rdfs:comment "An IT-approved short name or abbreviation used in column or object naming." .
+
+bm:BusinessTerm a owl:Class ;
+    rdfs:label "Business Term" ;
+    rdfs:comment "The full, human-readable business meaning resolved from an abbreviation." .
+
+bm:BusinessDomain a owl:Class ;
+    rdfs:label "Business Domain" ;
+    rdfs:comment "A high-level organizational domain grouping related business terms (e.g., Finance, HR, Sales)." .
+
+bm:DataProduct a owl:Class ;
+    rdfs:label "Data Product" ;
+    rdfs:comment "A curated, reusable dataset composed of columns from one or more source tables." .
+
+bm:DataProductColumn a owl:Class ;
+    rdfs:label "Data Product Column" ;
+    rdfs:comment "A column within a data product, mapped from one or more source columns." .
+
+bm:SemanticModel a owl:Class ;
+    rdfs:label "Semantic Model" ;
+    rdfs:comment "A semantic layer (Power BI dataset, SSAS tabular/multidimensional model) built on top of a data product." .
+
+bm:Report a owl:Class ;
+    rdfs:label "Report" ;
+    rdfs:comment "A Power BI report, SSAS report, or other analytical artifact consuming a semantic model." .
+
+bm:ServiceOrganization a owl:Class ;
+    rdfs:label "Service Organization" ;
+    rdfs:comment "An organizational unit that receives and uses reports." .
+
+bm:AbbreviationFile a owl:Class ;
+    rdfs:label "Abbreviation File" ;
+    rdfs:comment "The IT-provided, organization-signed-off file that defines the canonical abbreviation-to-term mapping." .
+
+# ─────────────────────────────────────────────
+# Object Properties
+# ─────────────────────────────────────────────
+
+bm:hasSchema a owl:ObjectProperty ;
+    rdfs:label "has schema" ;
+    rdfs:domain bm:SourceDatabase ;
+    rdfs:range  bm:SourceSchema .
+
+bm:hasTable a owl:ObjectProperty ;
+    rdfs:label "has table" ;
+    rdfs:domain bm:SourceSchema ;
+    rdfs:range  bm:SourceTable .
+
+bm:hasColumn a owl:ObjectProperty ;
+    rdfs:label "has column" ;
+    rdfs:domain bm:SourceTable ;
+    rdfs:range  bm:SourceColumn .
+
+bm:usesAbbreviation a owl:ObjectProperty ;
+    rdfs:label "uses abbreviation" ;
+    rdfs:domain bm:SourceColumn ;
+    rdfs:range  bm:Abbreviation .
+
+bm:expandsTo a owl:ObjectProperty ;
+    rdfs:label "expands to" ;
+    rdfs:comment "Links an abbreviation to its full business term." ;
+    rdfs:domain bm:Abbreviation ;
+    rdfs:range  bm:BusinessTerm .
+
+bm:approvedBy a owl:ObjectProperty ;
+    rdfs:label "approved by" ;
+    rdfs:comment "Links an abbreviation to the file in which it was approved." ;
+    rdfs:domain bm:Abbreviation ;
+    rdfs:range  bm:AbbreviationFile .
+
+bm:belongsToDomain a owl:ObjectProperty ;
+    rdfs:label "belongs to domain" ;
+    rdfs:domain bm:BusinessTerm ;
+    rdfs:range  bm:BusinessDomain .
+
+bm:composedOf a owl:ObjectProperty ;
+    rdfs:label "composed of" ;
+    rdfs:comment "A data product is composed of one or more source columns." ;
+    rdfs:domain bm:DataProduct ;
+    rdfs:range  bm:SourceColumn .
+
+bm:hasDataProductColumn a owl:ObjectProperty ;
+    rdfs:label "has data product column" ;
+    rdfs:domain bm:DataProduct ;
+    rdfs:range  bm:DataProductColumn .
+
+bm:derivedFrom a owl:ObjectProperty ;
+    rdfs:label "derived from" ;
+    rdfs:domain bm:DataProductColumn ;
+    rdfs:range  bm:SourceColumn .
+
+bm:mappedToTerm a owl:ObjectProperty ;
+    rdfs:label "mapped to term" ;
+    rdfs:domain bm:DataProductColumn ;
+    rdfs:range  bm:BusinessTerm .
+
+bm:exposedVia a owl:ObjectProperty ;
+    rdfs:label "exposed via" ;
+    rdfs:comment "A data product is exposed through a semantic model." ;
+    rdfs:domain bm:DataProduct ;
+    rdfs:range  bm:SemanticModel .
+
+bm:consumedBy a owl:ObjectProperty ;
+    rdfs:label "consumed by" ;
+    rdfs:domain bm:SemanticModel ;
+    rdfs:range  bm:Report .
+
+bm:distributedTo a owl:ObjectProperty ;
+    rdfs:label "distributed to" ;
+    rdfs:domain bm:Report ;
+    rdfs:range  bm:ServiceOrganization .
+
+# ─────────────────────────────────────────────
+# Datatype Properties
+# ─────────────────────────────────────────────
+
+bm:shortName a owl:DatatypeProperty ;
+    rdfs:label "short name" ;
+    rdfs:domain bm:Abbreviation ;
+    rdfs:range  xsd:string .
+
+bm:fullName a owl:DatatypeProperty ;
+    rdfs:label "full name" ;
+    rdfs:domain bm:BusinessTerm ;
+    rdfs:range  xsd:string .
+
+bm:definition a owl:DatatypeProperty ;
+    rdfs:label "definition" ;
+    rdfs:domain bm:BusinessTerm ;
+    rdfs:range  xsd:string .
+
+bm:columnName a owl:DatatypeProperty ;
+    rdfs:label "column name" ;
+    rdfs:domain bm:SourceColumn ;
+    rdfs:range  xsd:string .
+
+bm:dataType a owl:DatatypeProperty ;
+    rdfs:label "data type" ;
+    rdfs:domain bm:SourceColumn ;
+    rdfs:range  xsd:string .
+
+bm:databaseName a owl:DatatypeProperty ;
+    rdfs:label "database name" ;
+    rdfs:domain bm:SourceDatabase ;
+    rdfs:range  xsd:string .
+
+bm:schemaName a owl:DatatypeProperty ;
+    rdfs:label "schema name" ;
+    rdfs:domain bm:SourceSchema ;
+    rdfs:range  xsd:string .
+
+bm:tableName a owl:DatatypeProperty ;
+    rdfs:label "table name" ;
+    rdfs:domain bm:SourceTable ;
+    rdfs:range  xsd:string .
+
+bm:reportName a owl:DatatypeProperty ;
+    rdfs:label "report name" ;
+    rdfs:domain bm:Report ;
+    rdfs:range  xsd:string .
+
+bm:reportType a owl:DatatypeProperty ;
+    rdfs:label "report type" ;
+    rdfs:comment "E.g., PowerBI, SSAS_Tabular, SSAS_Multidimensional" ;
+    rdfs:domain bm:Report ;
+    rdfs:range  xsd:string .
+
+bm:modelName a owl:DatatypeProperty ;
+    rdfs:label "model name" ;
+    rdfs:domain bm:SemanticModel ;
+    rdfs:range  xsd:string .
+
+bm:modelType a owl:DatatypeProperty ;
+    rdfs:label "model type" ;
+    rdfs:comment "E.g., PowerBI_Dataset, SSAS_Tabular, SSAS_OLAP" ;
+    rdfs:domain bm:SemanticModel ;
+    rdfs:range  xsd:string .
+
+bm:owner a owl:DatatypeProperty ;
+    rdfs:label "owner" ;
+    rdfs:range  xsd:string .
+
+bm:approvedDate a owl:DatatypeProperty ;
+    rdfs:label "approved date" ;
+    rdfs:domain bm:AbbreviationFile ;
+    rdfs:range  xsd:date .
+
+bm:fileVersion a owl:DatatypeProperty ;
+    rdfs:label "file version" ;
+    rdfs:domain bm:AbbreviationFile ;
+    rdfs:range  xsd:string .
+
+# ─────────────────────────────────────────────
+# RDFS inference hook: fullName propagates as rdfs:label
+# ─────────────────────────────────────────────
+bm:fullName rdfs:subPropertyOf rdfs:label .
+
+# ═════════════════════════════════════════════
+# HIERARCHY FRAMEWORK
+# ═════════════════════════════════════════════
+# A generic Hierarchy class with a recursive
+# bm:hasParent / bm:hasChild property pair.
+# Each domain-specific hierarchy sub-classes
+# bm:HierarchyNode and bm:Hierarchy.
+# ─────────────────────────────────────────────
+
+bm:Hierarchy a owl:Class ;
+    rdfs:label "Hierarchy" ;
+    rdfs:comment "An abstract grouping of ordered, named levels that together form a navigational path through a business concept." .
+
+bm:HierarchyLevel a owl:Class ;
+    rdfs:label "Hierarchy Level" ;
+    rdfs:comment "A single named level within a hierarchy (e.g., 'Region' in a geographic hierarchy)." .
+
+bm:HierarchyNode a owl:Class ;
+    rdfs:label "Hierarchy Node" ;
+    rdfs:comment "A single instance (member) at a specific level in a hierarchy." .
+
+# Generic structural properties
+bm:hasLevel a owl:ObjectProperty ;
+    rdfs:label "has level" ;
+    rdfs:domain bm:Hierarchy ;
+    rdfs:range  bm:HierarchyLevel .
+
+bm:levelOrder a owl:DatatypeProperty ;
+    rdfs:label "level order" ;
+    rdfs:comment "1 = root/top level; higher numbers = leaf direction." ;
+    rdfs:domain bm:HierarchyLevel ;
+    rdfs:range  xsd:integer .
+
+bm:levelName a owl:DatatypeProperty ;
+    rdfs:label "level name" ;
+    rdfs:domain bm:HierarchyLevel ;
+    rdfs:range  xsd:string .
+
+bm:atLevel a owl:ObjectProperty ;
+    rdfs:label "at level" ;
+    rdfs:domain bm:HierarchyNode ;
+    rdfs:range  bm:HierarchyLevel .
+
+bm:hasParent a owl:ObjectProperty ;
+    rdfs:label "has parent" ;
+    rdfs:comment "Points to the immediate parent node in the same hierarchy." ;
+    rdfs:domain bm:HierarchyNode ;
+    rdfs:range  bm:HierarchyNode .
+
+bm:hasChild a owl:ObjectProperty ;
+    rdfs:label "has child" ;
+    owl:inverseOf bm:hasParent ;
+    rdfs:domain bm:HierarchyNode ;
+    rdfs:range  bm:HierarchyNode .
+
+bm:nodeName a owl:DatatypeProperty ;
+    rdfs:label "node name" ;
+    rdfs:domain bm:HierarchyNode ;
+    rdfs:range  xsd:string .
+
+bm:nodeCode a owl:DatatypeProperty ;
+    rdfs:label "node code" ;
+    rdfs:comment "Short code or key for the node (e.g., a GL account number, country ISO code)." ;
+    rdfs:domain bm:HierarchyNode ;
+    rdfs:range  xsd:string .
+
+bm:isLeaf a owl:DatatypeProperty ;
+    rdfs:label "is leaf" ;
+    rdfs:comment "True when the node has no children." ;
+    rdfs:domain bm:HierarchyNode ;
+    rdfs:range  xsd:boolean .
+
+bm:sortOrder a owl:DatatypeProperty ;
+    rdfs:label "sort order" ;
+    rdfs:domain bm:HierarchyNode ;
+    rdfs:range  xsd:integer .
+
+# ─────────────────────────────────────────────
+# 1. DATA PRODUCT HIERARCHY
+# ─────────────────────────────────────────────
+# Organises data products into a subject-area / domain / product tree.
+
+bm:DataProductHierarchy a owl:Class ;
+    rdfs:subClassOf bm:Hierarchy ;
+    rdfs:label "Data Product Hierarchy" ;
+    rdfs:comment "Hierarchy organising data products from broad subject areas down to individual product variants." .
+
+bm:DataProductHierarchyLevel a owl:Class ;
+    rdfs:subClassOf bm:HierarchyLevel ;
+    rdfs:label "Data Product Hierarchy Level" .
+
+bm:DataProductHierarchyNode a owl:Class ;
+    rdfs:subClassOf bm:HierarchyNode ;
+    rdfs:label "Data Product Hierarchy Node" ;
+    rdfs:comment "A node that may optionally reference an actual bm:DataProduct at the leaf level." .
+
+bm:representsDataProduct a owl:ObjectProperty ;
+    rdfs:label "represents data product" ;
+    rdfs:comment "Links a leaf-level DataProductHierarchyNode to the bm:DataProduct it describes." ;
+    rdfs:domain bm:DataProductHierarchyNode ;
+    rdfs:range  bm:DataProduct .
+
+# ─────────────────────────────────────────────
+# 2. BUSINESS DOMAIN HIERARCHY
+# ─────────────────────────────────────────────
+# Organises business domains from enterprise division down to sub-function.
+
+bm:BusinessDomainHierarchy a owl:Class ;
+    rdfs:subClassOf bm:Hierarchy ;
+    rdfs:label "Business Domain Hierarchy" ;
+    rdfs:comment "Hierarchy of business domains from enterprise → division → department → function." .
+
+bm:BusinessDomainHierarchyLevel a owl:Class ;
+    rdfs:subClassOf bm:HierarchyLevel ;
+    rdfs:label "Business Domain Hierarchy Level" .
+
+bm:BusinessDomainHierarchyNode a owl:Class ;
+    rdfs:subClassOf bm:HierarchyNode ;
+    rdfs:label "Business Domain Hierarchy Node" .
+
+bm:representsDomain a owl:ObjectProperty ;
+    rdfs:label "represents domain" ;
+    rdfs:comment "Links a leaf-level domain node to the bm:BusinessDomain it describes." ;
+    rdfs:domain bm:BusinessDomainHierarchyNode ;
+    rdfs:range  bm:BusinessDomain .
+
+# ─────────────────────────────────────────────
+# 3. CUSTOMER HIERARCHY
+# ─────────────────────────────────────────────
+# Represents customer groupings: ultimate parent → subsidiary → region → account.
+
+bm:CustomerHierarchy a owl:Class ;
+    rdfs:subClassOf bm:Hierarchy ;
+    rdfs:label "Customer Hierarchy" ;
+    rdfs:comment "Hierarchy grouping customer accounts from global parent down to individual account." .
+
+bm:CustomerHierarchyLevel a owl:Class ;
+    rdfs:subClassOf bm:HierarchyLevel ;
+    rdfs:label "Customer Hierarchy Level" .
+
+bm:CustomerHierarchyNode a owl:Class ;
+    rdfs:subClassOf bm:HierarchyNode ;
+    rdfs:label "Customer Hierarchy Node" .
+
+bm:customerSegment a owl:DatatypeProperty ;
+    rdfs:label "customer segment" ;
+    rdfs:comment "E.g., Enterprise, Mid-Market, SMB." ;
+    rdfs:domain bm:CustomerHierarchyNode ;
+    rdfs:range  xsd:string .
+
+bm:customerType a owl:DatatypeProperty ;
+    rdfs:label "customer type" ;
+    rdfs:comment "E.g., Direct, Partner, Internal." ;
+    rdfs:domain bm:CustomerHierarchyNode ;
+    rdfs:range  xsd:string .
+
+# ─────────────────────────────────────────────
+# 4. ENTITY / SOURCE HIERARCHY
+# ─────────────────────────────────────────────
+# Represents legal or operational entities and their source system lineage.
+
+bm:EntityHierarchy a owl:Class ;
+    rdfs:subClassOf bm:Hierarchy ;
+    rdfs:label "Entity / Source Hierarchy" ;
+    rdfs:comment "Hierarchy of legal or operational entities, each of which may be a data source." .
+
+bm:EntityHierarchyLevel a owl:Class ;
+    rdfs:subClassOf bm:HierarchyLevel ;
+    rdfs:label "Entity Hierarchy Level" .
+
+bm:EntityHierarchyNode a owl:Class ;
+    rdfs:subClassOf bm:HierarchyNode ;
+    rdfs:label "Entity Hierarchy Node" .
+
+bm:entityType a owl:DatatypeProperty ;
+    rdfs:label "entity type" ;
+    rdfs:comment "E.g., LegalEntity, OperatingUnit, CostCenter, Subsidiary." ;
+    rdfs:domain bm:EntityHierarchyNode ;
+    rdfs:range  xsd:string .
+
+bm:legalEntityId a owl:DatatypeProperty ;
+    rdfs:label "legal entity ID" ;
+    rdfs:domain bm:EntityHierarchyNode ;
+    rdfs:range  xsd:string .
+
+bm:sourceSystem a owl:DatatypeProperty ;
+    rdfs:label "source system" ;
+    rdfs:comment "The IT system of record for this entity (e.g., SAP, Dynamics 365)." ;
+    rdfs:domain bm:EntityHierarchyNode ;
+    rdfs:range  xsd:string .
+
+bm:mapsToSourceDB a owl:ObjectProperty ;
+    rdfs:label "maps to source DB" ;
+    rdfs:comment "Links an entity node to the bm:SourceDatabase that holds its data." ;
+    rdfs:domain bm:EntityHierarchyNode ;
+    rdfs:range  bm:SourceDatabase .
+
+# ─────────────────────────────────────────────
+# 5. PERSON HIERARCHY
+# ─────────────────────────────────────────────
+# Represents the organizational people structure: organization → business unit → team → individual.
+
+bm:PersonHierarchy a owl:Class ;
+    rdfs:subClassOf bm:Hierarchy ;
+    rdfs:label "Person Hierarchy" ;
+    rdfs:comment "Hierarchy of people within the organization, aligned to reporting lines." .
+
+bm:PersonHierarchyLevel a owl:Class ;
+    rdfs:subClassOf bm:HierarchyLevel ;
+    rdfs:label "Person Hierarchy Level" .
+
+bm:PersonHierarchyNode a owl:Class ;
+    rdfs:subClassOf bm:HierarchyNode ;
+    rdfs:label "Person Hierarchy Node" .
+
+bm:personRole a owl:DatatypeProperty ;
+    rdfs:label "person role" ;
+    rdfs:comment "Job title or functional role (e.g., Analyst, Manager, Director)." ;
+    rdfs:domain bm:PersonHierarchyNode ;
+    rdfs:range  xsd:string .
+
+bm:employeeId a owl:DatatypeProperty ;
+    rdfs:label "employee ID" ;
+    rdfs:domain bm:PersonHierarchyNode ;
+    rdfs:range  xsd:string .
+
+bm:reportsTo a owl:ObjectProperty ;
+    rdfs:label "reports to" ;
+    rdfs:subPropertyOf bm:hasParent ;
+    rdfs:domain bm:PersonHierarchyNode ;
+    rdfs:range  bm:PersonHierarchyNode .
+
+bm:manages a owl:ObjectProperty ;
+    rdfs:label "manages" ;
+    owl:inverseOf bm:reportsTo ;
+    rdfs:domain bm:PersonHierarchyNode ;
+    rdfs:range  bm:PersonHierarchyNode .
+
+# ─────────────────────────────────────────────
+# 6. FISCAL HIERARCHY
+# ─────────────────────────────────────────────
+# Represents the fiscal calendar: fiscal year → half → quarter → period/month → week → day.
+
+bm:FiscalHierarchy a owl:Class ;
+    rdfs:subClassOf bm:Hierarchy ;
+    rdfs:label "Fiscal Hierarchy" ;
+    rdfs:comment "Hierarchy of fiscal time periods used for financial reporting." .
+
+bm:FiscalHierarchyLevel a owl:Class ;
+    rdfs:subClassOf bm:HierarchyLevel ;
+    rdfs:label "Fiscal Hierarchy Level" .
+
+bm:FiscalHierarchyNode a owl:Class ;
+    rdfs:subClassOf bm:HierarchyNode ;
+    rdfs:label "Fiscal Hierarchy Node" .
+
+bm:fiscalYear a owl:DatatypeProperty ;
+    rdfs:label "fiscal year" ;
+    rdfs:comment "Four-digit fiscal year (e.g., 2024)." ;
+    rdfs:domain bm:FiscalHierarchyNode ;
+    rdfs:range  xsd:integer .
+
+bm:fiscalQuarter a owl:DatatypeProperty ;
+    rdfs:label "fiscal quarter" ;
+    rdfs:comment "Quarter number within the fiscal year (1–4)." ;
+    rdfs:domain bm:FiscalHierarchyNode ;
+    rdfs:range  xsd:integer .
+
+bm:fiscalPeriod a owl:DatatypeProperty ;
+    rdfs:label "fiscal period" ;
+    rdfs:comment "Accounting period / month number within the fiscal year (1–12 or 1–13)." ;
+    rdfs:domain bm:FiscalHierarchyNode ;
+    rdfs:range  xsd:integer .
+
+bm:calendarDate a owl:DatatypeProperty ;
+    rdfs:label "calendar date" ;
+    rdfs:comment "ISO 8601 calendar date corresponding to this fiscal node (for day-level nodes)." ;
+    rdfs:domain bm:FiscalHierarchyNode ;
+    rdfs:range  xsd:date .
+
+bm:fiscalYearStartDate a owl:DatatypeProperty ;
+    rdfs:label "fiscal year start date" ;
+    rdfs:domain bm:FiscalHierarchyNode ;
+    rdfs:range  xsd:date .
+
+bm:fiscalYearEndDate a owl:DatatypeProperty ;
+    rdfs:label "fiscal year end date" ;
+    rdfs:domain bm:FiscalHierarchyNode ;
+    rdfs:range  xsd:date .
+
+bm:isCurrentPeriod a owl:DatatypeProperty ;
+    rdfs:label "is current period" ;
+    rdfs:domain bm:FiscalHierarchyNode ;
+    rdfs:range  xsd:boolean .
+
+# ─────────────────────────────────────────────
+# Cross-hierarchy links
+# ─────────────────────────────────────────────
+
+bm:inFiscalPeriod a owl:ObjectProperty ;
+    rdfs:label "in fiscal period" ;
+    rdfs:comment "Links any node (e.g., a Report or DataProduct) to the fiscal period it belongs to." ;
+    rdfs:range bm:FiscalHierarchyNode .
+
+bm:ownedByPerson a owl:ObjectProperty ;
+    rdfs:label "owned by person" ;
+    rdfs:comment "Links any node to its responsible PersonHierarchyNode." ;
+    rdfs:range bm:PersonHierarchyNode .
+
+bm:forCustomer a owl:ObjectProperty ;
+    rdfs:label "for customer" ;
+    rdfs:comment "Links a Report or DataProduct to the CustomerHierarchyNode it serves." ;
+    rdfs:range bm:CustomerHierarchyNode .
+
+bm:producedByEntity a owl:ObjectProperty ;
+    rdfs:label "produced by entity" ;
+    rdfs:comment "Links a DataProduct or Report to the EntityHierarchyNode that produces it." ;
+    rdfs:range bm:EntityHierarchyNode .

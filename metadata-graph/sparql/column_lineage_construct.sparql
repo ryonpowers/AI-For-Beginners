@@ -1,0 +1,42 @@
+# column_lineage_construct.sparql
+#
+# PURPOSE: CONSTRUCT a sub-graph showing the complete lineage chain
+#          for all mapped columns: SourceColumn → Abbreviation → BusinessTerm
+#          → DataProductColumn → DataProduct → SemanticModel → Report.
+#
+# Load this result as named graph <urn:lineage:full> in Stardog.
+#
+# USAGE:
+#   stardog query $STARDOG_DB sparql/column_lineage_construct.sparql \
+#     --output-format turtle > lineage_output.ttl
+
+PREFIX bm:   <urn:org:metadata:>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+CONSTRUCT {
+    ?column  bm:usesAbbreviation ?abbrev .
+    ?abbrev  bm:expandsTo        ?term .
+    ?term    bm:belongsToDomain  ?domain .
+    ?dpCol   bm:derivedFrom      ?column .
+    ?dpCol   bm:mappedToTerm     ?term .
+    ?dp      bm:hasDataProductColumn ?dpCol .
+    ?dp      bm:exposedVia       ?model .
+    ?model   bm:consumedBy       ?report .
+    ?report  bm:distributedTo    ?org .
+}
+FROM <urn:source:columns>
+FROM <urn:abbrev:mapping>
+FROM <urn:dataproduct:core>
+FROM <urn:semantic:models>
+FROM <urn:reports:catalog>
+WHERE {
+    ?column bm:usesAbbreviation ?abbrev .
+    ?abbrev bm:expandsTo        ?term .
+    OPTIONAL { ?term    bm:belongsToDomain  ?domain . }
+    OPTIONAL { ?dpCol   bm:derivedFrom      ?column .
+               ?dpCol   bm:mappedToTerm     ?term .
+               OPTIONAL { ?dp bm:hasDataProductColumn ?dpCol .
+                           OPTIONAL { ?dp   bm:exposedVia ?model .
+                                      OPTIONAL { ?model bm:consumedBy ?report .
+                                                 OPTIONAL { ?report bm:distributedTo ?org . } } } } }
+}

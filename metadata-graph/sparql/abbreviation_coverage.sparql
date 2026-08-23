@@ -1,0 +1,32 @@
+# abbreviation_coverage.sparql
+#
+# PURPOSE: Identify source columns that contain known abbreviations
+#          (i.e., columns whose name includes an IT-approved short name).
+#          Returns coverage statistics per database.
+#
+# USAGE:
+#   stardog query $STARDOG_DB sparql/abbreviation_coverage.sparql
+
+PREFIX bm:   <urn:org:metadata:>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT
+    ?sourceDB
+    (COUNT(DISTINCT ?column) AS ?totalColumns)
+    (COUNT(DISTINCT ?mappedColumn) AS ?mappedColumns)
+FROM <urn:source:columns>
+FROM <urn:abbrev:mapping>
+WHERE {
+    ?db      a bm:SourceDatabase ;
+             bm:databaseName ?sourceDB .
+    ?db      bm:hasSchema ?schema .
+    ?schema  bm:hasTable  ?table .
+    ?table   bm:hasColumn ?column .
+
+    OPTIONAL {
+        ?column bm:usesAbbreviation ?abbrev .
+        BIND(?column AS ?mappedColumn)
+    }
+}
+GROUP BY ?sourceDB
+ORDER BY DESC(?totalColumns)
