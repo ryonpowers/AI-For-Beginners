@@ -1,0 +1,33 @@
+# resolve_column_to_term.sparql
+#
+# PURPOSE: Given a source column name (abbreviated), resolve it to its
+#          full business term, domain, and definition.
+#
+# USAGE (Stardog CLI):
+#   stardog query $STARDOG_DB sparql/resolve_column_to_term.sparql \
+#     --bind "columnName=cust_id"
+#
+# PARAMETERS:
+#   ?columnName  – the raw abbreviated column name to look up
+
+PREFIX bm:   <urn:org:metadata:>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?column ?abbreviation ?shortName ?businessTerm ?fullName ?definition ?domain ?domainLabel
+FROM <urn:source:columns>
+FROM <urn:abbrev:mapping>
+WHERE {
+    ?column  a bm:SourceColumn ;
+             bm:columnName ?columnName ;
+             bm:usesAbbreviation ?abbreviation .
+
+    ?abbreviation bm:shortName ?shortName ;
+                  bm:expandsTo ?businessTerm .
+
+    ?businessTerm bm:fullName   ?fullName ;
+                  bm:definition ?definition ;
+                  bm:belongsToDomain ?domain .
+
+    ?domain rdfs:label ?domainLabel .
+}
+ORDER BY ?column

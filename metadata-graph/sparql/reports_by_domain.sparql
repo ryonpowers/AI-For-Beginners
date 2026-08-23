@@ -1,0 +1,45 @@
+# reports_by_domain.sparql
+#
+# PURPOSE: List all reports that surface data from a given business domain.
+#
+# USAGE:
+#   stardog query $STARDOG_DB sparql/reports_by_domain.sparql \
+#     --bind "domainLabel=Finance"
+
+PREFIX bm:   <urn:org:metadata:>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT
+    ?report
+    ?reportName
+    ?reportType
+    ?owner
+    ?semanticModel
+    ?modelName
+    ?domain
+    ?organization
+FROM <urn:abbrev:mapping>
+FROM <urn:dataproduct:core>
+FROM <urn:semantic:models>
+FROM <urn:reports:catalog>
+WHERE {
+    ?domain a bm:BusinessDomain ;
+            rdfs:label ?domainLabel .
+
+    ?businessTerm bm:belongsToDomain ?domain .
+
+    ?dpCol bm:mappedToTerm ?businessTerm .
+
+    ?dataProduct bm:hasDataProductColumn ?dpCol ;
+                 bm:exposedVia ?semanticModel .
+
+    ?semanticModel bm:modelName ?modelName ;
+                   bm:consumedBy ?report .
+
+    ?report bm:reportName ?reportName ;
+            bm:reportType ?reportType .
+
+    OPTIONAL { ?report bm:owner ?owner . }
+    OPTIONAL { ?report bm:distributedTo ?organization . }
+}
+ORDER BY ?reportName

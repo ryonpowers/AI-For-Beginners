@@ -1,0 +1,234 @@
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dc:    <http://purl.org/dc/elements/1.1/> .
+@prefix bm:    <urn:org:metadata:> .
+
+# ─────────────────────────────────────────────
+# Ontology header
+# ─────────────────────────────────────────────
+<urn:org:metadata:ontology>
+    a owl:Ontology ;
+    dc:title "Enterprise Business Metadata Ontology" ;
+    dc:description "OWL ontology mapping IT abbreviations and source columns to business domains, data products, semantic models, and reports." ;
+    owl:versionInfo "1.0.0" .
+
+# ─────────────────────────────────────────────
+# Classes
+# ─────────────────────────────────────────────
+
+bm:SourceDatabase a owl:Class ;
+    rdfs:label "Source Database" ;
+    rdfs:comment "A relational database that is a source of raw data." .
+
+bm:SourceSchema a owl:Class ;
+    rdfs:label "Source Schema" ;
+    rdfs:comment "A schema within a source database." .
+
+bm:SourceTable a owl:Class ;
+    rdfs:label "Source Table" ;
+    rdfs:comment "A table within a source schema." .
+
+bm:SourceColumn a owl:Class ;
+    rdfs:label "Source Column" ;
+    rdfs:comment "A column within a source table, potentially carrying an IT-derived abbreviation." .
+
+bm:Abbreviation a owl:Class ;
+    rdfs:label "Abbreviation" ;
+    rdfs:comment "An IT-approved short name or abbreviation used in column or object naming." .
+
+bm:BusinessTerm a owl:Class ;
+    rdfs:label "Business Term" ;
+    rdfs:comment "The full, human-readable business meaning resolved from an abbreviation." .
+
+bm:BusinessDomain a owl:Class ;
+    rdfs:label "Business Domain" ;
+    rdfs:comment "A high-level organizational domain grouping related business terms (e.g., Finance, HR, Sales)." .
+
+bm:DataProduct a owl:Class ;
+    rdfs:label "Data Product" ;
+    rdfs:comment "A curated, reusable dataset composed of columns from one or more source tables." .
+
+bm:DataProductColumn a owl:Class ;
+    rdfs:label "Data Product Column" ;
+    rdfs:comment "A column within a data product, mapped from one or more source columns." .
+
+bm:SemanticModel a owl:Class ;
+    rdfs:label "Semantic Model" ;
+    rdfs:comment "A semantic layer (Power BI dataset, SSAS tabular/multidimensional model) built on top of a data product." .
+
+bm:Report a owl:Class ;
+    rdfs:label "Report" ;
+    rdfs:comment "A Power BI report, SSAS report, or other analytical artifact consuming a semantic model." .
+
+bm:ServiceOrganization a owl:Class ;
+    rdfs:label "Service Organization" ;
+    rdfs:comment "An organizational unit that receives and uses reports." .
+
+bm:AbbreviationFile a owl:Class ;
+    rdfs:label "Abbreviation File" ;
+    rdfs:comment "The IT-provided, organization-signed-off file that defines the canonical abbreviation-to-term mapping." .
+
+# ─────────────────────────────────────────────
+# Object Properties
+# ─────────────────────────────────────────────
+
+bm:hasSchema a owl:ObjectProperty ;
+    rdfs:label "has schema" ;
+    rdfs:domain bm:SourceDatabase ;
+    rdfs:range  bm:SourceSchema .
+
+bm:hasTable a owl:ObjectProperty ;
+    rdfs:label "has table" ;
+    rdfs:domain bm:SourceSchema ;
+    rdfs:range  bm:SourceTable .
+
+bm:hasColumn a owl:ObjectProperty ;
+    rdfs:label "has column" ;
+    rdfs:domain bm:SourceTable ;
+    rdfs:range  bm:SourceColumn .
+
+bm:usesAbbreviation a owl:ObjectProperty ;
+    rdfs:label "uses abbreviation" ;
+    rdfs:domain bm:SourceColumn ;
+    rdfs:range  bm:Abbreviation .
+
+bm:expandsTo a owl:ObjectProperty ;
+    rdfs:label "expands to" ;
+    rdfs:comment "Links an abbreviation to its full business term." ;
+    rdfs:domain bm:Abbreviation ;
+    rdfs:range  bm:BusinessTerm .
+
+bm:approvedBy a owl:ObjectProperty ;
+    rdfs:label "approved by" ;
+    rdfs:comment "Links an abbreviation to the file in which it was approved." ;
+    rdfs:domain bm:Abbreviation ;
+    rdfs:range  bm:AbbreviationFile .
+
+bm:belongsToDomain a owl:ObjectProperty ;
+    rdfs:label "belongs to domain" ;
+    rdfs:domain bm:BusinessTerm ;
+    rdfs:range  bm:BusinessDomain .
+
+bm:composedOf a owl:ObjectProperty ;
+    rdfs:label "composed of" ;
+    rdfs:comment "A data product is composed of one or more source columns." ;
+    rdfs:domain bm:DataProduct ;
+    rdfs:range  bm:SourceColumn .
+
+bm:hasDataProductColumn a owl:ObjectProperty ;
+    rdfs:label "has data product column" ;
+    rdfs:domain bm:DataProduct ;
+    rdfs:range  bm:DataProductColumn .
+
+bm:derivedFrom a owl:ObjectProperty ;
+    rdfs:label "derived from" ;
+    rdfs:domain bm:DataProductColumn ;
+    rdfs:range  bm:SourceColumn .
+
+bm:mappedToTerm a owl:ObjectProperty ;
+    rdfs:label "mapped to term" ;
+    rdfs:domain bm:DataProductColumn ;
+    rdfs:range  bm:BusinessTerm .
+
+bm:exposedVia a owl:ObjectProperty ;
+    rdfs:label "exposed via" ;
+    rdfs:comment "A data product is exposed through a semantic model." ;
+    rdfs:domain bm:DataProduct ;
+    rdfs:range  bm:SemanticModel .
+
+bm:consumedBy a owl:ObjectProperty ;
+    rdfs:label "consumed by" ;
+    rdfs:domain bm:SemanticModel ;
+    rdfs:range  bm:Report .
+
+bm:distributedTo a owl:ObjectProperty ;
+    rdfs:label "distributed to" ;
+    rdfs:domain bm:Report ;
+    rdfs:range  bm:ServiceOrganization .
+
+# ─────────────────────────────────────────────
+# Datatype Properties
+# ─────────────────────────────────────────────
+
+bm:shortName a owl:DatatypeProperty ;
+    rdfs:label "short name" ;
+    rdfs:domain bm:Abbreviation ;
+    rdfs:range  xsd:string .
+
+bm:fullName a owl:DatatypeProperty ;
+    rdfs:label "full name" ;
+    rdfs:domain bm:BusinessTerm ;
+    rdfs:range  xsd:string .
+
+bm:definition a owl:DatatypeProperty ;
+    rdfs:label "definition" ;
+    rdfs:domain bm:BusinessTerm ;
+    rdfs:range  xsd:string .
+
+bm:columnName a owl:DatatypeProperty ;
+    rdfs:label "column name" ;
+    rdfs:domain bm:SourceColumn ;
+    rdfs:range  xsd:string .
+
+bm:dataType a owl:DatatypeProperty ;
+    rdfs:label "data type" ;
+    rdfs:domain bm:SourceColumn ;
+    rdfs:range  xsd:string .
+
+bm:databaseName a owl:DatatypeProperty ;
+    rdfs:label "database name" ;
+    rdfs:domain bm:SourceDatabase ;
+    rdfs:range  xsd:string .
+
+bm:schemaName a owl:DatatypeProperty ;
+    rdfs:label "schema name" ;
+    rdfs:domain bm:SourceSchema ;
+    rdfs:range  xsd:string .
+
+bm:tableName a owl:DatatypeProperty ;
+    rdfs:label "table name" ;
+    rdfs:domain bm:SourceTable ;
+    rdfs:range  xsd:string .
+
+bm:reportName a owl:DatatypeProperty ;
+    rdfs:label "report name" ;
+    rdfs:domain bm:Report ;
+    rdfs:range  xsd:string .
+
+bm:reportType a owl:DatatypeProperty ;
+    rdfs:label "report type" ;
+    rdfs:comment "E.g., PowerBI, SSAS_Tabular, SSAS_Multidimensional" ;
+    rdfs:domain bm:Report ;
+    rdfs:range  xsd:string .
+
+bm:modelName a owl:DatatypeProperty ;
+    rdfs:label "model name" ;
+    rdfs:domain bm:SemanticModel ;
+    rdfs:range  xsd:string .
+
+bm:modelType a owl:DatatypeProperty ;
+    rdfs:label "model type" ;
+    rdfs:comment "E.g., PowerBI_Dataset, SSAS_Tabular, SSAS_OLAP" ;
+    rdfs:domain bm:SemanticModel ;
+    rdfs:range  xsd:string .
+
+bm:owner a owl:DatatypeProperty ;
+    rdfs:label "owner" ;
+    rdfs:range  xsd:string .
+
+bm:approvedDate a owl:DatatypeProperty ;
+    rdfs:label "approved date" ;
+    rdfs:domain bm:AbbreviationFile ;
+    rdfs:range  xsd:date .
+
+bm:fileVersion a owl:DatatypeProperty ;
+    rdfs:label "file version" ;
+    rdfs:domain bm:AbbreviationFile ;
+    rdfs:range  xsd:string .
+
+# ─────────────────────────────────────────────
+# RDFS inference hook: fullName propagates as rdfs:label
+# ─────────────────────────────────────────────
+bm:fullName rdfs:subPropertyOf rdfs:label .

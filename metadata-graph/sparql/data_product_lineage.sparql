@@ -1,0 +1,77 @@
+# data_product_lineage.sparql
+#
+# PURPOSE: Show the full lineage of a data product:
+#          source columns → data product columns → business terms → reports.
+#
+# USAGE:
+#   stardog query $STARDOG_DB sparql/data_product_lineage.sparql \
+#     --bind "dataProductName=SalesDataProduct"
+
+PREFIX bm:   <urn:org:metadata:>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT
+    ?dataProduct
+    ?dpColumnName
+    ?sourceDB
+    ?sourceSchema
+    ?sourceTable
+    ?sourceColumn
+    ?businessTerm
+    ?fullName
+    ?domain
+    ?semanticModel
+    ?modelName
+    ?report
+    ?reportName
+    ?organization
+FROM <urn:source:columns>
+FROM <urn:abbrev:mapping>
+FROM <urn:dataproduct:core>
+FROM <urn:semantic:models>
+FROM <urn:reports:catalog>
+WHERE {
+    ?dataProduct a bm:DataProduct ;
+                 rdfs:label ?dataProductName .
+
+    # Data product → data product column
+    OPTIONAL {
+        ?dataProduct bm:hasDataProductColumn ?dpCol .
+        ?dpCol rdfs:label ?dpColumnName .
+
+        # Data product column → source column
+        OPTIONAL {
+            ?dpCol bm:derivedFrom ?srcCol .
+            ?srcCol bm:columnName ?sourceColumn .
+
+            # Source column → table → schema → database
+            OPTIONAL {
+                ?srcTable bm:hasColumn  ?srcCol ;
+                          bm:tableName  ?sourceTable .
+                ?srcSchema bm:hasTable  ?srcTable ;
+                           bm:schemaName ?sourceSchema .
+                ?srcDB bm:hasSchema     ?srcSchema ;
+                       bm:databaseName  ?sourceDB .
+            }
+        }
+
+        # Data product column → business term
+        OPTIONAL {
+            ?dpCol bm:mappedToTerm ?businessTerm .
+            ?businessTerm bm:fullName ?fullName .
+            OPTIONAL { ?businessTerm bm:belongsToDomain ?domain . }
+        }
+    }
+
+    # Data product → semantic model → report → org
+    OPTIONAL {
+        ?dataProduct bm:exposedVia ?semanticModel .
+        ?semanticModel bm:modelName ?modelName .
+        OPTIONAL {
+            ?semanticModel bm:consumedBy ?report .
+            ?report bm:reportName ?reportName .
+            OPTIONAL { ?report bm:distributedTo ?organization . }
+        }
+    }
+}
+ORDER BY ?dataProduct ?dpColumnName
