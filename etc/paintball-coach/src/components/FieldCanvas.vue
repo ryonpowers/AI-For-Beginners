@@ -31,14 +31,21 @@ const baseRows = computed(() => Array.from({ length: 6 }, (_, index) => index * 
 const baseColumns = computed(() => Array.from({ length: 11 }, (_, index) => index * 10))
 
 const objectCenter = (object: FieldObject) => {
-  if (object.points?.length) {
+  const start = object.points?.[0]
+  const end = object.points?.[1]
+
+  if (start && end) {
     return {
-      x: (object.points[0].x + object.points[1].x) / 2,
-      y: (object.points[0].y + object.points[1].y) / 2,
+      x: (start.x + end.x) / 2,
+      y: (start.y + end.y) / 2,
     }
   }
 
   return { x: object.x + object.width / 2, y: object.y + object.height / 2 }
+}
+
+const linePoint = (object: FieldObject, index: 0 | 1) => {
+  return object.points?.[index] ?? { x: object.x, y: object.y }
 }
 
 const handleFieldClick = (event: MouseEvent) => {
@@ -92,10 +99,10 @@ const handleFieldClick = (event: MouseEvent) => {
         <template v-for="object in state.fieldObjects" :key="object.id">
           <line
             v-if="object.type === 'lane' && object.points"
-            :x1="object.points[0].x"
-            :y1="object.points[0].y"
-            :x2="object.points[1].x"
-            :y2="object.points[1].y"
+            :x1="linePoint(object, 0).x"
+            :y1="linePoint(object, 0).y"
+            :x2="linePoint(object, 1).x"
+            :y2="linePoint(object, 1).y"
             :stroke="object.color"
             stroke-width="1.6"
             stroke-linecap="round"

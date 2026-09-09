@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import FieldCanvas from '@/components/FieldCanvas.vue'
 import {
   addFieldObject,
@@ -11,9 +12,30 @@ import {
   state,
   updateSelectedObject,
 } from '@/stores/coachState'
-import type { FieldObjectType } from '@/types'
+import type { Coordinate, FieldObjectType } from '@/types'
 
 const objectTypes: FieldObjectType[] = ['bunker', 'lane', 'zone', 'startBox', 'danger', 'note']
+
+const laneStart = computed<Coordinate>(() => {
+  return selectedObject.value?.points?.[0] ?? { x: 0, y: 0 }
+})
+
+const laneEnd = computed<Coordinate>(() => {
+  return selectedObject.value?.points?.[1] ?? { x: 0, y: 0 }
+})
+
+const updateLanePoint = (index: 0 | 1, patch: Partial<Coordinate>) => {
+  const points = selectedObject.value?.points
+  if (!points || points.length !== 2) return
+
+  const nextPoints: [Coordinate, Coordinate] = [
+    { ...(points[0] ?? { x: 0, y: 0 }) },
+    { ...(points[1] ?? { x: 0, y: 0 }) },
+  ]
+
+  nextPoints[index] = { ...nextPoints[index], ...patch }
+  updateSelectedObject({ points: nextPoints })
+}
 </script>
 
 <template>
@@ -113,21 +135,21 @@ const objectTypes: FieldObjectType[] = ['bunker', 'lane', 'zone', 'startBox', 'd
             <div class="dual-inputs">
               <label class="field-label">
                 Start X
-                <input :value="selectedObject.points[0].x" type="number" min="0" max="100" step="1" @input="updateSelectedObject({ points: [{ ...selectedObject.points[0], x: Number(($event.target as HTMLInputElement).value) }, selectedObject.points[1]] })" />
+                <input :value="laneStart.x" type="number" min="0" max="100" step="1" @input="updateLanePoint(0, { x: Number(($event.target as HTMLInputElement).value) })" />
               </label>
               <label class="field-label">
                 Start Y
-                <input :value="selectedObject.points[0].y" type="number" min="0" max="60" step="1" @input="updateSelectedObject({ points: [{ ...selectedObject.points[0], y: Number(($event.target as HTMLInputElement).value) }, selectedObject.points[1]] })" />
+                <input :value="laneStart.y" type="number" min="0" max="60" step="1" @input="updateLanePoint(0, { y: Number(($event.target as HTMLInputElement).value) })" />
               </label>
             </div>
             <div class="dual-inputs">
               <label class="field-label">
                 End X
-                <input :value="selectedObject.points[1].x" type="number" min="0" max="100" step="1" @input="updateSelectedObject({ points: [selectedObject.points[0], { ...selectedObject.points[1], x: Number(($event.target as HTMLInputElement).value) }] })" />
+                <input :value="laneEnd.x" type="number" min="0" max="100" step="1" @input="updateLanePoint(1, { x: Number(($event.target as HTMLInputElement).value) })" />
               </label>
               <label class="field-label">
                 End Y
-                <input :value="selectedObject.points[1].y" type="number" min="0" max="60" step="1" @input="updateSelectedObject({ points: [selectedObject.points[0], { ...selectedObject.points[1], y: Number(($event.target as HTMLInputElement).value) }] })" />
+                <input :value="laneEnd.y" type="number" min="0" max="60" step="1" @input="updateLanePoint(1, { y: Number(($event.target as HTMLInputElement).value) })" />
               </label>
             </div>
           </div>

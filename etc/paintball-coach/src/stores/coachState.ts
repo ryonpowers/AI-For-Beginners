@@ -96,32 +96,62 @@ const defaultLayout: SavedLayout = {
   updatedAt: now(),
 }
 
-export const state = reactive({
+interface CoachState {
+  teamName: string
+  opponentName: string
+  fieldTemplateName: string
+  currentLayoutName: string
+  fieldObjects: FieldObject[]
+  savedLayouts: SavedLayout[]
+  selectedObjectId: string | null
+  activeObjectType: FieldObjectType
+  players: Player[]
+  points: PointRecord[]
+  currentPointId: string
+  eventDraft: {
+    type: MatchEventType
+    playerId: string
+    side: PointSide
+    intensity: number
+    details: string
+  }
+  selectedFieldPosition: Coordinate
+  coachNoteDraft: string
+  parsedNotes: ParsedNote[]
+  heatmapFilters: {
+    eventTypes: MatchEventType[]
+    playerId: string
+    side: PointSide | 'all'
+    pointId: string
+  }
+}
+
+export const state = reactive<CoachState>({
   teamName: 'Raiders',
   opponentName: 'Spartans',
   fieldTemplateName: 'Tournament Airball',
   currentLayoutName: 'Standard XBall',
   fieldObjects: clone(baseFieldObjects),
-  savedLayouts: [defaultLayout] as SavedLayout[],
+  savedLayouts: [defaultLayout],
   selectedObjectId: 'obj-snake',
-  activeObjectType: 'bunker' as FieldObjectType,
+  activeObjectType: 'bunker',
   players: clone(players),
-  points: clone(basePoints) as PointRecord[],
+  points: clone(basePoints),
   currentPointId: pointOneId,
   eventDraft: {
-    type: 'move' as MatchEventType,
+    type: 'move',
     playerId: 'p1',
-    side: 'north' as PointSide,
+    side: 'north',
     intensity: 4,
     details: '',
   },
-  selectedFieldPosition: { x: 50, y: 30 } as Coordinate,
+  selectedFieldPosition: { x: 50, y: 30 },
   coachNoteDraft: '',
-  parsedNotes: [] as ParsedNote[],
+  parsedNotes: [],
   heatmapFilters: {
-    eventTypes: ['move', 'lane', 'elimination'] as MatchEventType[],
+    eventTypes: ['move', 'lane', 'elimination'],
     playerId: 'all',
-    side: 'all' as PointSide | 'all',
+    side: 'all',
     pointId: 'all',
   },
 })
@@ -129,8 +159,10 @@ export const state = reactive({
 let persistenceEnabled = false
 
 const getObjectCenter = (object: FieldObject) => {
-  if (object.points?.length) {
-    const [start, end] = object.points
+  const start = object.points?.[0]
+  const end = object.points?.[1]
+
+  if (start && end) {
     return { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 }
   }
 
@@ -150,7 +182,7 @@ const nearestZoneLabel = (position: Coordinate) => {
   return nearest.distance <= 14 ? nearest.label : 'Open field'
 }
 
-export const currentPoint = computed(() => {
+export const currentPoint = computed<PointRecord | undefined>(() => {
   return state.points.find((point) => point.id === state.currentPointId) ?? state.points[0]
 })
 
@@ -335,7 +367,7 @@ export const removeSelectedObject = () => {
 export const saveCurrentLayout = () => {
   const layoutName = state.currentLayoutName.trim() || `Layout ${state.savedLayouts.length + 1}`
   const existing = state.savedLayouts.find((layout) => layout.name === layoutName)
-  const payload = {
+  const payload: SavedLayout = {
     id: existing?.id ?? createId('layout'),
     name: layoutName,
     objects: clone(state.fieldObjects),
@@ -432,7 +464,7 @@ export const parseCoachNote = () => {
     .map((player) => player.id)
 
   const relatedZoneLabels = state.fieldObjects
-    .filter((object) => normalized.includes(object.label.toLowerCase().split(' ')[0]))
+    .filter((object) => normalized.includes(object.label.toLowerCase().split(' ')[0] ?? ''))
     .map((object) => object.label)
 
   const tags = [
@@ -476,21 +508,21 @@ export const hydrateState = () => {
   if (!stored) return
 
   try {
-    const parsed = JSON.parse(stored) as Partial<typeof state>
+    const parsed = JSON.parse(stored) as Partial<CoachState>
 
     if (parsed.teamName) state.teamName = parsed.teamName
     if (parsed.opponentName) state.opponentName = parsed.opponentName
     if (parsed.fieldTemplateName) state.fieldTemplateName = parsed.fieldTemplateName
     if (parsed.currentLayoutName) state.currentLayoutName = parsed.currentLayoutName
-    if (Array.isArray(parsed.fieldObjects)) state.fieldObjects = parsed.fieldObjects as FieldObject[]
-    if (Array.isArray(parsed.savedLayouts) && parsed.savedLayouts.length) state.savedLayouts = parsed.savedLayouts as SavedLayout[]
-    if (parsed.selectedObjectId) state.selectedObjectId = parsed.selectedObjectId
-    if (Array.isArray(parsed.players) && parsed.players.length) state.players = parsed.players as Player[]
-    if (Array.isArray(parsed.points) && parsed.points.length) state.points = parsed.points as PointRecord[]
+    if (Array.isArray(parsed.fieldObjects)) state.fieldObjects = parsed.fieldObjects
+    if (Array.isArray(parsed.savedLayouts) && parsed.savedLayouts.length) state.savedLayouts = parsed.savedLayouts
+    if (parsed.selectedObjectId !== undefined) state.selectedObjectId = parsed.selectedObjectId
+    if (Array.isArray(parsed.players) && parsed.players.length) state.players = parsed.players
+    if (Array.isArray(parsed.points) && parsed.points.length) state.points = parsed.points
     if (parsed.currentPointId) state.currentPointId = parsed.currentPointId
     if (parsed.eventDraft) Object.assign(state.eventDraft, parsed.eventDraft)
-    if (parsed.selectedFieldPosition) state.selectedFieldPosition = parsed.selectedFieldPosition as Coordinate
-    if (Array.isArray(parsed.parsedNotes)) state.parsedNotes = parsed.parsedNotes as ParsedNote[]
+    if (parsed.selectedFieldPosition) state.selectedFieldPosition = parsed.selectedFieldPosition
+    if (Array.isArray(parsed.parsedNotes)) state.parsedNotes = parsed.parsedNotes
     if (parsed.heatmapFilters) Object.assign(state.heatmapFilters, parsed.heatmapFilters)
   } catch (error) {
     console.error('Unable to hydrate paintball coach state', error)
