@@ -3,9 +3,9 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import { enablePersistence, hydrateState } from '@/stores/coachState'
 
-const app = createApp(App)
+hydrateState()
+enablePersistence()
 
-app.use(router)
-
-app.mount('#app')
+createApp(App).use(router).mount('#app')

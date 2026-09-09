@@ -1,42 +1,41 @@
-# paintball-coach
+# Paintball Coach
 
-This template should help get you started developing with Vue 3 in Vite.
+A standalone Vue + Vite app for coaching paintball matches with four connected workflows:
 
-## Recommended IDE Setup
+- **Layout Designer** for building and editing bunker, lane, zone, start-box, note, and danger overlays
+- **Match Board** for recording points, outcomes, rosters, coach notes, and live field events
+- **Heat Map View** for filtering movement, lane pressure, elimination, snap, penalty, and win overlays on the fly
+- **Session Review** for comparing points, exporting session data, and reviewing AI-ready coaching insights
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## MVP features
 
-## Recommended Browser Setup
+- Layered field canvas with a reusable base map and editable tactical objects
+- Shared event stream powering live tagging, review, and heat maps
+- Local save/load for field layouts
+- Local session persistence in the browser
+- JSON session export for post-match analysis
+- Coach-note parsing that converts plain text into structured tactical tags
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+## Project setup
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Compile and hot-reload for development
 
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Type-check and build for production
 
 ```sh
 npm run build
 ```
+
+## Notes
+
+- The app stores layouts and session data in `localStorage`.
+- The initial dataset includes a sample field layout and two tagged points so the heat map and review screens render immediately.
+- Future AI integrations can attach computer vision for player tracking and language-model tooling for richer note parsing and tactical summaries.
