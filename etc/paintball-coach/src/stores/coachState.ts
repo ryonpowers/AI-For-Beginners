@@ -489,15 +489,50 @@ export const parseCoachNote = () => {
   state.coachNoteDraft = ''
 }
 
-export const downloadSessionExport = () => {
+const isIOS = () => {
+  if (typeof navigator === 'undefined') return false
+
+  return /iPad|iPhone|iPod/.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+}
+
+export const downloadSessionExport = async () => {
   if (typeof window === 'undefined') return
 
+  const fileName = `paintball-session-${new Date().toISOString().slice(0, 10)}.json`
   const blob = new Blob([JSON.stringify(exportPayload.value, null, 2)], { type: 'application/json' })
+
+  if (typeof File !== 'undefined' && typeof navigator !== 'undefined' && 'share' in navigator && 'canShare' in navigator) {
+    const file = new File([blob], fileName, { type: 'application/json' })
+
+    if (navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          title: 'Paintball Coach Session',
+          text: 'Session export from Paintball Coach',
+          files: [file],
+        })
+        return
+      } catch {
+        // Fall through to browser-based export handling.
+      }
+    }
+  }
+
   const url = window.URL.createObjectURL(blob)
+
+  if (isIOS()) {
+    window.open(url, '_blank', 'noopener,noreferrer')
+    window.setTimeout(() => window.URL.revokeObjectURL(url), 1000)
+    return
+  }
+
   const link = document.createElement('a')
   link.href = url
-  link.download = `paintball-session-${new Date().toISOString().slice(0, 10)}.json`
+  link.download = fileName
+  document.body.append(link)
   link.click()
+  link.remove()
   window.URL.revokeObjectURL(url)
 }
 

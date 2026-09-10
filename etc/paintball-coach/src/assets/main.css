@@ -7,6 +7,7 @@ body {
 
 #app {
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 button {
@@ -17,6 +18,9 @@ button {
   color: var(--text);
   cursor: pointer;
   transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 button:hover {
@@ -48,6 +52,9 @@ textarea {
   background: rgba(15, 23, 42, 0.85);
   color: var(--text);
   padding: 0.8rem 0.9rem;
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 textarea {
@@ -58,6 +65,10 @@ textarea {
   max-width: 1480px;
   margin: 0 auto;
   padding: 2rem;
+  padding-top: max(2rem, env(safe-area-inset-top));
+  padding-right: max(2rem, env(safe-area-inset-right));
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  padding-left: max(2rem, env(safe-area-inset-left));
 }
 
 .topbar,
@@ -200,6 +211,7 @@ textarea {
   border-radius: 20px;
   border: 1px solid rgba(148, 163, 184, 0.18);
   background: linear-gradient(180deg, rgba(34, 197, 94, 0.18), rgba(34, 197, 94, 0.05));
+  touch-action: manipulation;
 }
 
 .field-boundary {
